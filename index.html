@@ -1,1526 +1,626 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="theme-color" content="#1E3A5F">
-    <title>LogiFlex - Entregador</title>
-    <style>
-        /* ============================================
-           RESET E BASE - Compatível com Safari iOS
-           ============================================ */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        html {
-            height: 100%;
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #1E3A5F;
-            color: #1E293B;
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            position: fixed;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: none;
-        }
-
-        /* Fix para Safari não esconder a splash */
-        #app-container {
-            height: 100%;
-            width: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
-            position: relative;
-            background: #F5F6FA;
-        }
-
-        /* ============================================
-           SPLASH SCREEN - Safari Safe
-           ============================================ */
-        #splash {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #1E3A5F;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-            transition: opacity 0.6s ease-out;
-            -webkit-transition: opacity 0.6s ease-out;
-        }
-
-        #splash.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .splash-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            animation: bounceSafari 1.2s ease-in-out infinite;
-            -webkit-animation: bounceSafari 1.2s ease-in-out infinite;
-        }
-
-        @keyframes bounceSafari {
-            0%, 100% { -webkit-transform: translateY(0); transform: translateY(0); }
-            50% { -webkit-transform: translateY(-12px); transform: translateY(-12px); }
-        }
-
-        .splash-title {
-            color: white;
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: 3px;
-            margin-bottom: 8px;
-        }
-
-        .splash-sub {
-            color: rgba(255,255,255,0.7);
-            font-size: 14px;
-            letter-spacing: 2px;
-        }
-
-        .splash-loader {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-top-color: white;
-            border-radius: 50%;
-            margin-top: 40px;
-            animation: spinSafari 1s linear infinite;
-            -webkit-animation: spinSafari 1s linear infinite;
-        }
-
-        @keyframes spinSafari {
-            to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
-        }
-
-        /* ============================================
-           LOGIN - Safari Safe
-           ============================================ */
-        .tela-login {
-            min-height: 100%;
-            background: #1E3A5F;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .login-logo {
-            text-align: center;
-            margin: 40px 0 30px;
-        }
-
-        .login-logo-icon {
-            font-size: 72px;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .login-logo h1 {
-            color: white;
-            font-size: 28px;
-            letter-spacing: 2px;
-        }
-
-        .login-logo p {
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
-            margin-top: 6px;
-        }
-
-        .input-group {
-            margin-bottom: 14px;
-        }
-
-        .input-group label {
-            display: block;
-            color: rgba(255,255,255,0.7);
-            font-size: 13px;
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-
-        .input-safari {
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.1);
-            color: white;
-            font-size: 16px;
-            -webkit-appearance: none;
-            appearance: none;
-            outline: none;
-        }
-
-        .input-safari::placeholder {
-            color: rgba(255,255,255,0.4);
-        }
-
-        .input-safari:focus {
-            border-color: rgba(255,255,255,0.5);
-            background: rgba(255,255,255,0.15);
-        }
-
-        .btn-safari {
-            width: 100%;
-            padding: 18px;
-            border-radius: 12px;
-            border: none;
-            background: white;
-            color: #1E3A5F;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            margin-top: 10px;
-            transition: transform 0.1s;
-            -webkit-transition: transform 0.1s;
-        }
-
-        .btn-safari:active {
-            -webkit-transform: scale(0.97);
-            transform: scale(0.97);
-        }
-
-        .btn-safari:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .login-links {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .login-links a {
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
-            text-decoration: none;
-        }
-
-        /* ============================================
-           APP PRINCIPAL
-           ============================================ */
-        .app-header {
-            background: #1E3A5F;
-            color: white;
-            padding: 16px 20px;
-            padding-top: max(16px, env(safe-area-inset-top));
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .app-header h1 {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .header-btns {
-            display: flex;
-            gap: 10px;
-        }
-
-        .header-btn {
-            background: rgba(255,255,255,0.15);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
-            -webkit-appearance: none;
-        }
-
-        /* Tabs */
-        .tabs-bar {
-            display: flex;
-            background: #1E3A5F;
-            padding: 0 16px 12px;
-            gap: 8px;
-            position: sticky;
-            top: 56px;
-            z-index: 99;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.7);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            -webkit-appearance: none;
-        }
-
-        .tab-btn.active {
-            background: white;
-            color: #1E3A5F;
-        }
-
-        /* Cards */
-        .card {
-            background: white;
-            margin: 12px;
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .oferta-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .oferta-regiao {
-            font-size: 17px;
-            font-weight: 700;
-            color: #1E3A5F;
-        }
-
-        .oferta-info {
-            color: #64748B;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
-        .oferta-valor {
-            font-size: 22px;
-            font-weight: 800;
-            color: #10B981;
-        }
-
-        .tags-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .tag {
-            background: #F1F5F9;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            color: #64748B;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            background: #1E3A5F;
-            color: white;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            -webkit-appearance: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary:active {
-            opacity: 0.9;
-        }
-
-        .btn-success {
-            background: #10B981;
-        }
-
-        .btn-danger {
-            background: #EF4444;
-        }
-
-        /* Loading */
-        .loading-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 20px;
-            gap: 16px;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #E2E8F0;
-            border-top-color: #1E3A5F;
-            border-radius: 50%;
-            animation: spinSafari 1s linear infinite;
-        }
-
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #94A3B8;
-        }
-
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        /* Bottom nav */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            display: flex;
-            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-            z-index: 1000;
-        }
-
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 8px;
-            border: none;
-            background: none;
-            color: #94A3B8;
-            font-size: 11px;
-            cursor: pointer;
-            -webkit-appearance: none;
-        }
-
-        .nav-item.active {
-            color: #1E3A5F;
-        }
-
-        .nav-icon {
-            font-size: 24px;
-            line-height: 1;
-        }
-
-        /* Snackbar */
-        .snackbar {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            -webkit-transform: translateX(-50%) translateY(100px);
-            background: #1E293B;
-            color: white;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            z-index: 10000;
-            opacity: 0;
-            transition: all 0.3s;
-            -webkit-transition: all 0.3s;
-            max-width: 90%;
-            text-align: center;
-            pointer-events: none;
-        }
-
-        .snackbar.show {
-            transform: translateX(-50%) translateY(0);
-            -webkit-transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        .snackbar.success { background: #10B981; }
-        .snackbar.error { background: #EF4444; }
-
-        /* Rota Ativa */
-        .rota-progress-bar {
-            background: #1E3A5F;
-            color: white;
-            padding: 16px 20px;
-            padding-top: max(16px, env(safe-area-inset-top));
-        }
-
-        .progress-track {
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            margin-top: 12px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #10B981;
-            border-radius: 2px;
-            transition: width 0.5s;
-            -webkit-transition: width 0.5s;
-        }
-
-        .parada-card {
-            background: white;
-            margin: 12px;
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .parada-header {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .parada-numero {
-            width: 44px;
-            height: 44px;
-            background: #1E3A5F;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .parada-nome {
-            font-size: 17px;
-            font-weight: 700;
-        }
-
-        .parada-endereco {
-            color: #64748B;
-            font-size: 14px;
-            margin-top: 4px;
-            line-height: 1.4;
-        }
-
-        .instrucao-box {
-            background: #FEF3C7;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 12px;
-            font-size: 13px;
-            color: #92400E;
-            line-height: 1.4;
-        }
-
-        .acoes-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .acao-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid #E2E8F0;
-            background: white;
-            cursor: pointer;
-            -webkit-appearance: none;
-            text-align: left;
-            width: 100%;
-        }
-
-        .acao-item:active {
-            background: #F8FAFC;
-        }
-
-        .acao-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-
-        .acao-info {
-            flex: 1;
-        }
-
-        .acao-titulo {
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        .acao-sub {
-            font-size: 13px;
-            color: #64748B;
-            margin-top: 2px;
-        }
-
-        /* Overlay Scanner */
-        .overlay-full {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 20000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .overlay-full.active {
-            display: flex;
-        }
-
-        .scanner-frame {
-            width: 280px;
-            height: 200px;
-            border: 3px solid #EF4444;
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .scanner-laser {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #EF4444;
-            box-shadow: 0 0 8px #EF4444;
-            animation: laserScan 2s ease-in-out infinite;
-            -webkit-animation: laserScan 2s ease-in-out infinite;
-        }
-
-        @keyframes laserScan {
-            0%, 100% { top: 0; }
-            50% { top: 100%; }
-        }
-
-        /* Overlay Assinatura */
-        .assinatura-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: white;
-            z-index: 20000;
-            display: none;
-            flex-direction: column;
-        }
-
-        .assinatura-overlay.active {
-            display: flex;
-        }
-
-        .assinatura-header {
-            background: #1E3A5F;
-            color: white;
-            padding: 16px 20px;
-            padding-top: max(16px, env(safe-area-inset-top));
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .assinatura-area {
-            flex: 1;
-            margin: 16px;
-            border: 2px dashed #CBD5E1;
-            border-radius: 12px;
-            position: relative;
-            touch-action: none;
-        }
-
-        .assinatura-placeholder {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #94A3B8;
-            font-size: 16px;
-            pointer-events: none;
-        }
-
-        .assinatura-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .assinatura-botoes {
-            display: flex;
-            gap: 12px;
-            padding: 16px;
-            padding-bottom: calc(16px + env(safe-area-inset-bottom));
-        }
-
-        .btn-outline {
-            flex: 1;
-            padding: 16px;
-            border-radius: 12px;
-            border: 2px solid #E2E8F0;
-            background: white;
-            color: #64748B;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            -webkit-appearance: none;
-        }
-
-        /* Perfil */
-        .perfil-header {
-            background: #1E3A5F;
-            color: white;
-            padding: 20px;
-            padding-top: max(20px, env(safe-area-inset-top));
-            text-align: center;
-        }
-
-        .perfil-avatar {
-            width: 80px;
-            height: 80px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
-            font-size: 36px;
-            font-weight: 700;
-        }
-
-        .perfil-nome {
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .perfil-email {
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding: 16px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .stat-valor {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1E3A5F;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #64748B;
-            margin-top: 4px;
-        }
-
-        /* Esconde elementos */
-        .hidden { display: none !important; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Falamigo">
+<title>FALAMIGO - Meu Comunicador</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;background:#E3F2FD;height:100vh;overflow:hidden;position:fixed;width:100%}
+
+/* ===== SPLASH ===== */
+#splash{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10000}
+#splash h1{color:white;font-size:2.2rem;margin-top:15px;font-weight:700}
+#splash p{color:rgba(255,255,255,.8);margin:5px 0 20px;font-size:1rem}
+#splash input{padding:15px;border:none;border-radius:12px;font-size:1.1rem;text-align:center;width:280px;margin-bottom:10px;outline:none;-webkit-appearance:none}
+#splash .tipo-img{display:flex;gap:10px;margin-bottom:15px}
+#splash .tipo-img label{display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.2);padding:12px 20px;border-radius:12px;color:white;cursor:pointer;transition:all .2s}
+#splash .tipo-img label.on{background:rgba(255,255,255,.9);color:#667eea;transform:scale(1.05)}
+#splash .tipo-img input{display:none}
+#splash button{padding:15px 50px;background:white;color:#667eea;border:none;border-radius:30px;font-size:1.2rem;font-weight:700;cursor:pointer;-webkit-appearance:none}
+#splash .mascote{width:140px;height:140px;background:linear-gradient(135deg,#27AE60,#2ecc71);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(0,0,0,.3);animation:float 3s ease-in-out infinite}
+#splash .mascote svg{width:80px;height:80px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+
+/* ===== APP ===== */
+#app{display:none;flex-direction:column;height:100vh;max-width:600px;margin:0 auto;background:#E3F2FD}
+#app.visivel{display:flex}
+
+.header{background:#2C3E50;color:white;padding:12px;text-align:center}
+.header h1{font-size:1.2rem;font-weight:700}
+
+.display{background:#3498DB;color:white;padding:15px;min-height:60px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.1rem;font-weight:600;word-wrap:break-word}
+
+.controls{display:flex;gap:5px;padding:8px;background:white}
+.controls button{flex:1;padding:12px;border:none;border-radius:10px;font-size:.85rem;font-weight:700;color:white;cursor:pointer;-webkit-appearance:none}
+.btn-falar{background:#27AE60}.btn-desfazer{background:#F39C12}.btn-limpar{background:#E74C3C}
+
+.content{flex:1;overflow-y:auto;padding:10px;-webkit-overflow-scrolling:touch}
+
+/* Abas */
+.tabs{display:flex;gap:5px;margin-bottom:10px;overflow-x:auto;padding-bottom:5px;-webkit-overflow-scrolling:touch}
+.tab-btn{padding:10px 15px;border:none;border-radius:20px;font-size:.8rem;font-weight:700;color:white;cursor:pointer;white-space:nowrap;-webkit-appearance:none}
+.tab-btn.active{box-shadow:0 0 0 3px rgba(0,0,0,.2)}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card-btn{padding:20px 10px;border:none;border-radius:12px;font-size:1rem;font-weight:700;color:white;cursor:pointer;transition:all .2s;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;-webkit-appearance:none;position:relative}
+.card-btn:active{transform:scale(0.95);filter:brightness(0.9)}
+.card-btn .ico{font-size:2.2rem;line-height:1}
+
+/* Rotinas */
+.routine-card{background:white;border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.routine-card h3{color:#2C3E50;font-size:1.1rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.routine-card h3 .ico{font-size:1.6rem}
+.routine-steps{display:flex;gap:8px;overflow-x:auto;padding-bottom:5px;-webkit-overflow-scrolling:touch}
+.routine-step{flex:0 0 80px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.routine-step .num{width:28px;height:28px;border-radius:50%;background:#3498DB;color:white;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.routine-step .img{width:60px;height:60px;border-radius:12px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden}
+.routine-step .img svg{width:50px;height:50px}
+.routine-step .txt{font-size:.7rem;color:#555;font-weight:600;line-height:1.2}
+.routine-step-wrap{position:relative;flex:0 0 80px}
+.routine-play{width:100%;padding:10px;background:#27AE60;color:white;border:none;border-radius:10px;font-size:.9rem;font-weight:700;margin-top:10px;cursor:pointer;-webkit-appearance:none}
+
+/* Criar */
+.add-form{background:white;padding:15px;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.add-form h3{color:#2C3E50;margin-bottom:10px;font-size:1rem}
+.add-form input,.add-form select{width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;margin-bottom:8px;outline:none;-webkit-appearance:none}
+.add-form button{width:100%;padding:12px;background:#27AE60;color:white;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;-webkit-appearance:none}
+
+/* Nav */
+.nav{display:flex;background:white;box-shadow:0 -2px 10px rgba(0,0,0,.1);padding-bottom:env(safe-area-inset-bottom)}
+.nav button{flex:1;padding:10px 5px;border:none;background:white;color:#666;font-size:.7rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;-webkit-appearance:none}
+.nav button.on{background:#2C3E50;color:white}
+.nav button .ico{font-size:1.4rem;line-height:1}
+
+/* Modal */
+#modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;flex-direction:column}
+#modal.visivel{display:flex}
+.modal-box{background:white;border-radius:20px;padding:25px;max-width:350px;width:100%;text-align:center;max-height:80vh;overflow-y:auto}
+.modal-box h2{margin-bottom:15px;color:#2C3E50}
+.modal-step{display:flex;align-items:center;gap:15px;margin:15px 0;text-align:left}
+.modal-step .num{width:40px;height:40px;border-radius:50%;background:#3498DB;color:white;font-size:1.2rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-step .img{width:60px;height:60px;border-radius:12px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;overflow:hidden}
+.modal-step .img svg{width:50px;height:50px}
+.modal-step .info{flex:1}
+.modal-step .info h4{color:#2C3E50;font-size:1rem;margin-bottom:3px}
+.modal-step .info p{color:#666;font-size:.85rem}
+.modal-box button{width:100%;padding:12px;margin:5px 0;border:none;border-radius:10px;font-size:1rem;font-weight:700;color:white;cursor:pointer;-webkit-appearance:none}
+
+/* Toast */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:12px 24px;border-radius:25px;font-size:.9rem;z-index:99999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+</style>
+<base target="_blank">
 </head>
 <body>
 
-    <!-- ============================================
-         SPLASH SCREEN - Safari Safe
-         ============================================ -->
-    <div id="splash">
-        <div class="splash-icon">🚚</div>
-        <div class="splash-title">LogiFlex</div>
-        <div class="splash-sub">Entregas Inteligentes</div>
-        <div class="splash-loader"></div>
-    </div>
+<!-- ===== SPLASH ===== -->
+<div id="splash">
+<div class="mascote">
+<svg viewBox="0 0 100 100" fill="white">
+<ellipse cx="50" cy="55" rx="35" ry="30"/>
+<circle cx="35" cy="45" r="8"/><circle cx="65" cy="45" r="8"/>
+<circle cx="35" cy="45" r="3" fill="#333"/><circle cx="65" cy="45" r="3" fill="#333"/>
+<path d="M 30 60 Q 50 75 70 60" stroke="#333" stroke-width="3" fill="none"/>
+<path d="M 20 50 Q 10 40 15 30" stroke="white" stroke-width="4" fill="none"/>
+<path d="M 80 50 Q 90 40 85 30" stroke="white" stroke-width="4" fill="none"/>
+<path d="M 50 25 Q 50 10 55 5" stroke="#27AE60" stroke-width="4" fill="none"/>
+</svg>
+</div>
+<h1>FALAMIGO</h1>
+<p>Seu comunicador pessoal</p>
+<input type="text" id="nomeUser" placeholder="Digite seu nome" maxlength="20" autocapitalize="words">
 
-    <!-- ============================================
-         APP CONTAINER
-         ============================================ -->
-    <div id="app-container">
+<div class="tipo-img">
+<label id="lblFoto" onclick="escolherTipo('foto')">
+<input type="radio" name="tipoImg" value="foto" id="radFoto">
+<span style="font-size:1.8rem">📷</span>
+<span style="font-size:.8rem;font-weight:700">FOTOS REAIS</span>
+</label>
+<label id="lblDesenho" onclick="escolherTipo('desenho')">
+<input type="radio" name="tipoImg" value="desenho" id="radDesenho">
+<span style="font-size:1.8rem">🎨</span>
+<span style="font-size:.8rem;font-weight:700">DESENHOS</span>
+</label>
+</div>
 
-        <!-- TELA LOGIN -->
-        <div id="telaLogin" class="tela-login">
-            <div class="login-logo">
-                <span class="login-logo-icon">🚚</span>
-                <h1>LogiFlex</h1>
-                <p>Entregador</p>
-            </div>
+<button id="btnEntrar" onclick="entrar()">COMEÇAR</button>
+</div>
 
-            <div class="input-group">
-                <label>E-mail</label>
-                <input type="email" class="input-safari" id="loginEmail" value="carlos@email.com" placeholder="seu@email.com" autocomplete="off" autocorrect="off" autocapitalize="off">
-            </div>
+<!-- ===== APP ===== -->
+<div id="app">
+<div class="header"><h1>FALAMIGO</h1></div>
+<div class="display" id="display">Toque nos botoes para falar...</div>
+<div class="controls">
+<button class="btn-falar" onclick="falarTudo()">FALAR</button>
+<button class="btn-desfazer" onclick="desfazer()">DESFAZER</button>
+<button class="btn-limpar" onclick="limpar()">LIMPAR</button>
+</div>
+<div class="content" id="content"></div>
+<div class="nav">
+<button class="on" onclick="mudarTela('falar',this)"><span class="ico">*</span>FALAR</button>
+<button onclick="mudarTela('rotinas',this)"><span class="ico">📋</span>ROTINAS</button>
+<button onclick="mudarTela('criar',this)"><span class="ico">+</span>CRIAR</button>
+<button onclick="mudarTela('config',this)"><span class="ico">#</span>AJUSTES</button>
+</div>
+</div>
 
-            <div class="input-group">
-                <label>Senha</label>
-                <input type="password" class="input-safari" id="loginSenha" value="123456" placeholder="••••••" autocomplete="off">
-            </div>
+<!-- ===== MODAL ===== -->
+<div id="modal" onclick="fecharModal(event)">
+<div class="modal-box" id="modalBox" onclick="event.stopPropagation()"></div>
+</div>
+<div class="toast" id="toast"></div>
 
-            <button class="btn-safari" id="btnLogin" onclick="fazerLogin()">
-                <span id="btnLoginText">ENTRAR</span>
-            </button>
+<script>
+// ===== SVGs DESENHOS =====
+var svgs = {
+banho:'<svg viewBox="0 0 64 64" fill="none"><rect x="12" y="20" width="40" height="30" rx="5" fill="#3498DB" opacity=".3"/><ellipse cx="32" cy="18" rx="12" ry="8" fill="#F5CBA7"/><circle cx="28" cy="16" r="1.5" fill="#333"/><circle cx="36" cy="16" r="1.5" fill="#333"/><path d="M29 21 Q32 24 35 21" stroke="#333" stroke-width="1.5" fill="none"/><path d="M20 25 Q15 20 18 15" stroke="#3498DB" stroke-width="2" fill="none"/><path d="M44 25 Q49 20 46 15" stroke="#3498DB" stroke-width="2" fill="none"/><circle cx="22" cy="28" r="2" fill="#3498DB" opacity=".6"/><circle cx="42" cy="30" r="2" fill="#3498DB" opacity=".6"/><circle cx="32" cy="35" r="2" fill="#3498DB" opacity=".6"/></svg>',
+escova:'<svg viewBox="0 0 64 64" fill="none"><rect x="20" y="8" width="24" height="18" rx="3" fill="#E74C3C"/><rect x="22" y="26" width="20" height="4" fill="#C0392B"/><rect x="24" y="30" width="4" height="20" fill="#BDC3C7" rx="1"/><rect x="32" y="30" width="4" height="20" fill="#BDC3C7" rx="1"/><rect x="40" y="30" width="4" height="20" fill="#BDC3C7" rx="1"/><ellipse cx="32" cy="52" rx="8" ry="6" fill="#F5CBA7"/><circle cx="29" cy="50" r="1.5" fill="#333"/><circle cx="35" cy="50" r="1.5" fill="#333"/><path d="M30 54 Q32 56 34 54" stroke="#333" stroke-width="1" fill="none"/></svg>',
+banheiro:'<svg viewBox="0 0 64 64" fill="none"><rect x="8" y="8" width="48" height="48" rx="4" fill="#ECF0F1"/><rect x="12" y="12" width="40" height="8" fill="#BDC3C7"/><ellipse cx="32" cy="32" rx="10" ry="8" fill="#F5CBA7"/><circle cx="29" cy="30" r="1.5" fill="#333"/><circle cx="35" cy="30" r="1.5" fill="#333"/><path d="M30 35 Q32 37 34 35" stroke="#333" stroke-width="1" fill="none"/><rect x="26" y="40" width="12" height="10" rx="2" fill="#3498DB" opacity=".3"/><rect x="28" y="42" width="8" height="6" rx="1" fill="#fff"/></svg>',
+roupa:'<svg viewBox="0 0 64 64" fill="none"><path d="M20 16 L24 12 L40 12 L44 16 L44 48 L20 48 Z" fill="#E74C3C"/><rect x="24" y="12" width="16" height="4" fill="#C0392B"/><rect x="28" y="20" width="8" height="20" fill="#C0392B" opacity=".3"/><circle cx="32" cy="10" r="6" fill="#F5CBA7"/><circle cx="30" cy="9" r="1.5" fill="#333"/><circle cx="34" cy="9" r="1.5" fill="#333"/><path d="M31 12 Q32 13 33 12" stroke="#333" stroke-width="1" fill="none"/></svg>',
+agua:'<svg viewBox="0 0 64 64" fill="none"><path d="M20 20 Q32 8 44 20 Q52 28 44 40 Q32 52 20 40 Q12 28 20 20Z" fill="#3498DB" opacity=".3"/><path d="M24 24 Q32 16 40 24 Q44 30 40 36 Q32 44 24 36 Q20 30 24 24Z" fill="#3498DB"/><circle cx="28" cy="28" r="2" fill="#fff" opacity=".6"/><circle cx="36" cy="32" r="1.5" fill="#fff" opacity=".6"/></svg>',
+mao:'<svg viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="38" rx="14" ry="10" fill="#F5CBA7"/><rect x="24" y="18" width="4" height="16" rx="2" fill="#F5CBA7"/><rect x="30" y="14" width="4" height="20" rx="2" fill="#F5CBA7"/><rect x="36" y="16" width="4" height="18" rx="2" fill="#F5CBA7"/><rect x="20" y="22" width="4" height="12" rx="2" fill="#F5CBA7"/><circle cx="32" cy="10" r="6" fill="#F5CBA7"/><circle cx="30" cy="9" r="1.5" fill="#333"/><circle cx="34" cy="9" r="1.5" fill="#333"/><path d="M31 12 Q32 13 33 12" stroke="#333" stroke-width="1" fill="none"/><path d="M18 30 Q14 26 16 22" stroke="#3498DB" stroke-width="2" fill="none"/><path d="M46 30 Q50 26 48 22" stroke="#3498DB" stroke-width="2" fill="none"/></svg>',
+cama:'<svg viewBox="0 0 64 64" fill="none"><rect x="8" y="28" width="48" height="20" rx="4" fill="#3498DB" opacity=".3"/><rect x="10" y="30" width="44" height="16" rx="3" fill="#fff"/><rect x="10" y="30" width="18" height="16" rx="3" fill="#E8F6F3"/><rect x="8" y="44" width="48" height="8" rx="2" fill="#BDC3C7"/><circle cx="32" cy="22" r="8" fill="#F5CBA7"/><circle cx="30" cy="20" r="1.5" fill="#333"/><circle cx="34" cy="20" r="1.5" fill="#333"/><path d="M31 24 Q32 25 33 24" stroke="#333" stroke-width="1" fill="none"/></svg>',
+comida:'<svg viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="42" rx="20" ry="8" fill="#E67E22"/><rect x="16" y="28" width="32" height="16" rx="4" fill="#F39C12"/><rect x="20" y="24" width="24" height="8" rx="3" fill="#E67E22"/><circle cx="32" cy="16" r="6" fill="#F5CBA7"/><circle cx="30" cy="15" r="1.5" fill="#333"/><circle cx="34" cy="15" r="1.5" fill="#333"/><path d="M31 18 Q32 19 33 18" stroke="#333" stroke-width="1" fill="none"/><circle cx="24" cy="34" r="2" fill="#27AE60"/><circle cx="32" cy="36" r="2" fill="#27AE60"/><circle cx="40" cy="34" r="2" fill="#27AE60"/></svg>',
+pasta:'<svg viewBox="0 0 64 64" fill="none"><rect x="16" y="12" width="32" height="40" rx="4" fill="#3498DB"/><rect x="20" y="16" width="24" height="6" rx="2" fill="#fff"/><rect x="20" y="26" width="24" height="4" rx="1" fill="#fff" opacity=".6"/><rect x="20" y="32" width="24" height="4" rx="1" fill="#fff" opacity=".6"/><rect x="20" y="38" width="16" height="4" rx="1" fill="#fff" opacity=".6"/><circle cx="32" cy="8" r="5" fill="#F5CBA7"/><circle cx="30" cy="7" r="1.5" fill="#333"/><circle cx="34" cy="7" r="1.5" fill="#333"/></svg>',
+remedio:'<svg viewBox="0 0 64 64" fill="none"><rect x="20" y="16" width="24" height="32" rx="4" fill="#E74C3C"/><rect x="24" y="20" width="16" height="8" rx="2" fill="#fff"/><rect x="24" y="32" width="16" height="4" rx="1" fill="#fff" opacity=".6"/><rect x="24" y="38" width="12" height="4" rx="1" fill="#fff" opacity=".6"/><circle cx="32" cy="10" r="5" fill="#F5CBA7"/><circle cx="30" cy="9" r="1.5" fill="#333"/><circle cx="34" cy="9" r="1.5" fill="#333"/></svg>',
+vestir:'<svg viewBox="0 0 64 64" fill="none"><path d="M22 16 L28 12 L36 12 L42 16 L42 48 L22 48 Z" fill="#9C27B0"/><rect x="28" y="12" width="8" height="4" fill="#7B1FA2"/><rect x="30" y="20" width="4" height="20" fill="#7B1FA2" opacity=".3"/><circle cx="32" cy="8" r="5" fill="#F5CBA7"/><circle cx="30" cy="7" r="1.5" fill="#333"/><circle cx="34" cy="7" r="1.5" fill="#333"/></svg>',
+sapato:'<svg viewBox="0 0 64 64" fill="none"><path d="M16 40 L20 32 L36 32 L40 40 L40 48 L16 48 Z" fill="#795548"/><rect x="18" y="34" width="20" height="4" fill="#5D4037"/><rect x="16" y="44" width="24" height="6" rx="2" fill="#3E2723"/><circle cx="28" cy="24" r="6" fill="#F5CBA7"/><circle cx="26" cy="23" r="1.5" fill="#333"/><circle cx="30" cy="23" r="1.5" fill="#333"/></svg>',
+cabelo:'<svg viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="28" rx="14" ry="12" fill="#F5CBA7"/><path d="M18 28 Q14 20 18 12 Q32 4 46 12 Q50 20 46 28" fill="#5D4037"/><circle cx="28" cy="26" r="1.5" fill="#333"/><circle cx="36" cy="26" r="1.5" fill="#333"/><path d="M30 30 Q32 32 34 30" stroke="#333" stroke-width="1" fill="none"/><rect x="24" y="38" width="16" height="14" rx="4" fill="#3498DB" opacity=".3"/><path d="M28 42 Q32 38 36 42" stroke="#3498DB" stroke-width="2" fill="none"/></svg>',
+escola:'<svg viewBox="0 0 64 64" fill="none"><rect x="8" y="20" width="48" height="32" rx="4" fill="#E74C3C"/><rect x="12" y="24" width="40" height="8" rx="2" fill="#C0392B"/><rect x="16" y="36" width="10" height="10" rx="2" fill="#fff"/><rect x="38" y="36" width="10" height="10" rx="2" fill="#fff"/><path d="M32 8 L20 20 L44 20 Z" fill="#C0392B"/><circle cx="32" cy="12" r="5" fill="#F5CBA7"/><circle cx="30" cy="11" r="1.5" fill="#333"/><circle cx="34" cy="11" r="1.5" fill="#333"/></svg>',
+mochila:'<svg viewBox="0 0 64 64" fill="none"><rect x="16" y="16" width="32" height="36" rx="6" fill="#F39C12"/><rect x="20" y="20" width="24" height="8" rx="2" fill="#E67E22"/><rect x="24" y="32" width="16" height="14" rx="2" fill="#E67E22" opacity=".3"/><rect x="28" y="12" width="8" height="6" rx="2" fill="#E67E22"/><circle cx="32" cy="8" r="5" fill="#F5CBA7"/><circle cx="30" cy="7" r="1.5" fill="#333"/><circle cx="34" cy="7" r="1.5" fill="#333"/></svg>',
+porta:'<svg viewBox="0 0 64 64" fill="none"><rect x="8" y="8" width="48" height="48" rx="4" fill="#795548"/><rect x="12" y="12" width="20" height="40" rx="2" fill="#8D6E63"/><rect x="36" y="12" width="16" height="40" rx="2" fill="#8D6E63"/><circle cx="26" cy="32" r="3" fill="#F39C12"/><circle cx="32" cy="6" r="5" fill="#F5CBA7"/><circle cx="30" cy="5" r="1.5" fill="#333"/><circle cx="34" cy="5" r="1.5" fill="#333"/></svg>',
+rosto:'<svg viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="32" rx="18" ry="20" fill="#F5CBA7"/><circle cx="26" cy="28" r="2" fill="#333"/><circle cx="38" cy="28" r="2" fill="#333"/><path d="M28 38 Q32 42 36 38" stroke="#333" stroke-width="1.5" fill="none"/><path d="M20 20 Q16 24 18 28" stroke="#5D4037" stroke-width="2" fill="none"/><path d="M44 20 Q48 24 46 28" stroke="#5D4037" stroke-width="2" fill="none"/></svg>',
+escovar:'<svg viewBox="0 0 64 64" fill="none"><rect x="24" y="8" width="16" height="12" rx="3" fill="#E74C3C"/><rect x="26" y="20" width="12" height="3" fill="#C0392B"/><rect x="28" y="24" width="3" height="18" fill="#BDC3C7" rx="1"/><rect x="34" y="24" width="3" height="18" fill="#BDC3C7" rx="1"/><ellipse cx="32" cy="46" rx="8" ry="6" fill="#F5CBA7"/><circle cx="30" cy="44" r="1.5" fill="#333"/><circle cx="34" cy="44" r="1.5" fill="#333"/><path d="M31 48 Q32 49 33 48" stroke="#333" stroke-width="1" fill="none"/></svg>',
+chuveiro:'<svg viewBox="0 0 64 64" fill="none"><rect x="20" y="8" width="24" height="8" rx="3" fill="#BDC3C7"/><rect x="28" y="16" width="8" height="4" fill="#95A5A6"/><path d="M32 20 L32 28" stroke="#BDC3C7" stroke-width="3"/><path d="M24 32 Q20 28 22 24" stroke="#3498DB" stroke-width="2" fill="none"/><path d="M40 32 Q44 28 42 24" stroke="#3498DB" stroke-width="2" fill="none"/><circle cx="28" cy="34" r="2" fill="#3498DB" opacity=".6"/><circle cx="36" cy="36" r="2" fill="#3498DB" opacity=".6"/><ellipse cx="32" cy="48" rx="10" ry="8" fill="#F5CBA7"/><circle cx="29" cy="46" r="1.5" fill="#333"/><circle cx="35" cy="46" r="1.5" fill="#333"/><path d="M30 50 Q32 52 34 50" stroke="#333" stroke-width="1" fill="none"/></svg>',
+secar:'<svg viewBox="0 0 64 64" fill="none"><rect x="16" y="20" width="32" height="24" rx="4" fill="#ECF0F1" stroke="#BDC3C7" stroke-width="2"/><rect x="20" y="24" width="24" height="4" rx="1" fill="#BDC3C7" opacity=".5"/><rect x="20" y="30" width="24" height="4" rx="1" fill="#BDC3C7" opacity=".5"/><rect x="20" y="36" width="16" height="4" rx="1" fill="#BDC3C7" opacity=".5"/><path d="M48 28 Q54 24 52 20" stroke="#3498DB" stroke-width="2" fill="none"/><path d="M48 36 Q54 40 52 44" stroke="#3498DB" stroke-width="2" fill="none"/><circle cx="32" cy="12" r="6" fill="#F5CBA7"/><circle cx="30" cy="11" r="1.5" fill="#333"/><circle cx="34" cy="11" r="1.5" fill="#333"/></svg>',
+pente:'<svg viewBox="0 0 64 64" fill="none"><rect x="20" y="16" width="24" height="6" rx="2" fill="#795548"/><rect x="22" y="22" width="4" height="16" rx="1" fill="#795548"/><rect x="28" y="22" width="4" height="16" rx="1" fill="#795548"/><rect x="34" y="22" width="4" height="16" rx="1" fill="#795548"/><rect x="40" y="22" width="4" height="16" rx="1" fill="#795548"/><ellipse cx="32" cy="44" rx="8" ry="6" fill="#F5CBA7"/><circle cx="30" cy="42" r="1.5" fill="#333"/><circle cx="34" cy="42" r="1.5" fill="#333"/><path d="M31 46 Q32 47 33 46" stroke="#333" stroke-width="1" fill="none"/></svg>',
+vaso:'<svg viewBox="0 0 64 64" fill="none"><rect x="20" y="16" width="24" height="20" rx="4" fill="#ECF0F1" stroke="#BDC3C7" stroke-width="2"/><rect x="18" y="36" width="28" height="8" rx="3" fill="#BDC3C7"/><rect x="16" y="44" width="32" height="6" rx="2" fill="#95A5A6"/><ellipse cx="32" cy="14" rx="8" ry="6" fill="#F5CBA7"/><circle cx="29" cy="12" r="1.5" fill="#333"/><circle cx="35" cy="12" r="1.5" fill="#333"/><path d="M30 16 Q32 17 34 16" stroke="#333" stroke-width="1" fill="none"/></svg>',
+papel:'<svg viewBox="0 0 64 64" fill="none"><rect x="22" y="12" width="20" height="28" rx="3" fill="#fff" stroke="#BDC3C7" stroke-width="2"/><rect x="26" y="16" width="12" height="2" rx="1" fill="#BDC3C7" opacity=".5"/><rect x="26" y="22" width="12" height="2" rx="1" fill="#BDC3C7" opacity=".5"/><rect x="26" y="28" width="8" height="2" rx="1" fill="#BDC3C7" opacity=".5"/><rect x="24" y="42" width="16" height="10" rx="2" fill="#BDC3C7"/><circle cx="32" cy="8" r="5" fill="#F5CBA7"/><circle cx="30" cy="7" r="1.5" fill="#333"/><circle cx="34" cy="7" r="1.5" fill="#333"/></svg>',
+maos:'<svg viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="40" rx="16" ry="10" fill="#F5CBA7"/><rect x="20" y="16" width="5" height="18" rx="2" fill="#F5CBA7"/><rect x="28" y="12" width="5" height="22" rx="2" fill="#F5CBA7"/><rect x="36" y="14" width="5" height="20" rx="2" fill="#F5CBA7"/><rect x="16" y="20" width="5" height="14" rx="2" fill="#F5CBA7"/><circle cx="32" cy="8" r="6" fill="#F5CBA7"/><circle cx="30" cy="7" r="1.5" fill="#333"/><circle cx="34" cy="7" r="1.5" fill="#333"/><path d="M31 10 Q32 11 33 10" stroke="#333" stroke-width="1" fill="none"/><path d="M14 28 Q10 24 12 20" stroke="#3498DB" stroke-width="2" fill="none"/><path d="M50 28 Q54 24 52 20" stroke="#3498DB" stroke-width="2" fill="none"/></svg>'
+};
 
-            <div class="login-links">
-                <a href="#" onclick="mostrarCadastro(); return false;">Não tem conta? Cadastre-se</a>
-            </div>
-        </div>
+// ===== ROTINAS =====
+var rotinas = [
+{nome:"Tomar Banho",cor:"#3498DB",ico:"🚿",passos:[
+{txt:"Entrar no banheiro",svg:"banheiro"},{txt:"Tirar a roupa",svg:"roupa"},
+{txt:"Abrir o chuveiro",svg:"chuveiro"},{txt:"Se ensaboar",svg:"banho"},
+{txt:"Enxaguar",svg:"agua"},{txt:"Secar com toalha",svg:"secar"},
+{txt:"Vestir roupa limpa",svg:"vestir"}]},
+{nome:"Escovar os Dentes",cor:"#E74C3C",ico:"🪥",passos:[
+{txt:"Pegar a escova",svg:"escova"},{txt:"Colocar pasta",svg:"pasta"},
+{txt:"Escovar por 2 min",svg:"escovar"},{txt:"Enxaguar a boca",svg:"agua"},
+{txt:"Lavar a escova",svg:"maos"},{txt:"Guardar tudo",svg:"pasta"}]},
+{nome:"Ir ao Banheiro",cor:"#795548",ico:"🚽",passos:[
+{txt:"Entrar no banheiro",svg:"banheiro"},{txt:"Tirar a roupa de baixo",svg:"roupa"},
+{txt:"Sentar no vaso",svg:"vaso"},{txt:"Usar papel higienico",svg:"papel"},
+{txt:"Lavar as maos",svg:"maos"},{txt:"Secar as maos",svg:"secar"}]},
+{nome:"Arrumar para Escola",cor:"#9C27B0",ico:"🎒",passos:[
+{txt:"Acordar",svg:"cama"},{txt:"Escovar os dentes",svg:"escova"},
+{txt:"Tomar banho",svg:"banho"},{txt:"Vestir uniforme",svg:"vestir"},
+{txt:"Pentear o cabelo",svg:"cabelo"},{txt:"Colocar sapato",svg:"sapato"},
+{txt:"Pegar mochila",svg:"mochila"},{txt:"Sair de casa",svg:"porta"}]},
+{nome:"Hora de Dormir",cor:"#2C3E50",ico:"🌙",passos:[
+{txt:"Tomar banho",svg:"banho"},{txt:"Escovar os dentes",svg:"escova"},
+{txt:"Vestir pijama",svg:"vestir"},{txt:"Tomar remedio",svg:"remedio"},
+{txt:"Deitar na cama",svg:"cama"},{txt:"Boa noite!",svg:"rosto"}]},
+{nome:"Hora da Refeicao",cor:"#E67E22",ico:"🍽️",passos:[
+{txt:"Lavar as maos",svg:"maos"},{txt:"Sentar na mesa",svg:"comida"},
+{txt:"Rezar / Agradecer",svg:"rosto"},{txt:"Comer a comida",svg:"comida"},
+{txt:"Beber agua",svg:"agua"},{txt:"Lavar as maos",svg:"maos"}]}
+];
 
-        <!-- TELA CADASTRO -->
-        <div id="telaCadastro" class="tela-login hidden">
-            <div class="login-logo">
-                <span class="login-logo-icon">📝</span>
-                <h1>Cadastro</h1>
-                <p>Crie sua conta de entregador</p>
-            </div>
+// ===== DADOS PADRAO =====
+var dadosPadrao = {
+abas:[
+{nome:"Gosto",cor:"#27AE60",itens:[
+{ico:"🍕",texto:"Quero pizza"},{ico:"🍦",texto:"Quero sorvete"},
+{ico:"🎮",texto:"Quero jogar"},{ico:"📺",texto:"Quero ver TV"},
+{ico:"🎵",texto:"Quero musica"},{ico:"🏊",texto:"Quero nadar"}]},
+{nome:"Preciso",cor:"#3498DB",itens:[
+{ico:"💧",texto:"Quero agua"},{ico:"🍽️",texto:"Quero comer"},
+{ico:"🚽",texto:"Preciso ir ao banheiro"},{ico:"😴",texto:"Quero dormir"},
+{ico:"🚿",texto:"Quero tomar banho"},{ico:"👔",texto:"Quero me arrumar"},
+{ico:"🪥",texto:"Quero escovar os dentes"},{ico:"💊",texto:"Preciso tomar remedio"},
+{ico:"🧼",texto:"Quero lavar as maos"},{ico:"🛁",texto:"Quero tomar banho"}]},
+{nome:"Sinto",cor:"#F39C12",itens:[
+{ico:"😊",texto:"Estou feliz"},{ico:"😢",texto:"Estou triste"},
+{ico:"😠",texto:"Estou com raiva"},{ico:"😨",texto:"Estou com medo"},
+{ico:"😫",texto:"Estou cansado"},{ico:"🤕",texto:"Estou com dor"}]},
+{nome:"Familia",cor:"#E91E63",itens:[
+{ico:"👩",texto:"Quero minha mae"},{ico:"👨",texto:"Quero meu pai"},
+{ico:"👵",texto:"Quero minha vovo"},{ico:"👴",texto:"Quero meu vovo"},
+{ico:"👧",texto:"Quero minha irma"},{ico:"👦",texto:"Quero meu irmao"}]},
+{nome:"Emergencia",cor:"#E74C3C",itens:[
+{ico:"🆘",texto:"Preciso de ajuda"},{ico:"🤕",texto:"Estou machucado"},
+{ico:"💊",texto:"Preciso de remedio"},{ico:"👨‍⚕️",texto:"Quero o medico"},
+{ico:"🏥",texto:"Preciso ir ao hospital"},{ico:"📞",texto:"Quero ligar para os meus pais"}]}
+]
+};
 
-            <div class="input-group">
-                <label>Nome completo</label>
-                <input type="text" class="input-safari" id="cadNome" placeholder="Seu nome" autocomplete="off">
-            </div>
+// ===== ESTADO =====
+var frase = [];
+var telaAtual = "falar";
+var synth = null;
+var vozes = [];
+var vozPT = null;
+var dados = null;
+var tipoImg = "desenho";
+var lsOK = false;
 
-            <div class="input-group">
-                <label>E-mail</label>
-                <input type="email" class="input-safari" id="cadEmail" placeholder="seu@email.com" autocomplete="off" autocorrect="off" autocapitalize="off">
-            </div>
+// ===== INIT =====
+function init() {
+    // Test localStorage
+    try {
+        localStorage.setItem("__test__", "1");
+        localStorage.removeItem("__test__");
+        lsOK = true;
+    } catch(e) {
+        lsOK = false;
+    }
 
-            <div class="input-group">
-                <label>Telefone</label>
-                <input type="tel" class="input-safari" id="cadTelefone" placeholder="(11) 99999-0000" autocomplete="off">
-            </div>
+    // Carregar dados
+    if (lsOK) {
+        var salvo = localStorage.getItem("falamigo_v3");
+        if (salvo) {
+            try { dados = JSON.parse(salvo); } catch(e) { dados = null; }
+        }
+    }
+    if (!dados) {
+        dados = JSON.parse(JSON.stringify(dadosPadrao));
+    }
 
-            <div class="input-group">
-                <label>CPF</label>
-                <input type="text" class="input-safari" id="cadCpf" placeholder="123.456.789-00" autocomplete="off">
-            </div>
-
-            <div class="input-group">
-                <label>Senha</label>
-                <input type="password" class="input-safari" id="cadSenha" placeholder="Mínimo 6 caracteres" autocomplete="off">
-            </div>
-
-            <button class="btn-safari" onclick="fazerCadastro()">
-                CADASTRAR
-            </button>
-
-            <div class="login-links">
-                <a href="#" onclick="voltarLogin(); return false;">Já tem conta? Entre aqui</a>
-            </div>
-        </div>
-
-        <!-- APP PRINCIPAL -->
-        <div id="telaApp" class="hidden">
-            <div class="app-header">
-                <h1>LogiFlex</h1>
-                <div class="header-btns">
-                    <button class="header-btn" onclick="mostrarPerfil()">👤</button>
-                    <button class="header-btn" onclick="atualizarDados()">🔄</button>
-                </div>
-            </div>
-
-            <div class="tabs-bar">
-                <button class="tab-btn active" id="tab0" onclick="mudarAba(0)">📡 Radar</button>
-                <button class="tab-btn" id="tab1" onclick="mudarAba(1)">📦 Entregas</button>
-            </div>
-
-            <div id="conteudoApp"></div>
-        </div>
-
-        <!-- ROTA ATIVA -->
-        <div id="telaRota" class="hidden">
-            <div class="rota-progress-bar">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 14px; opacity: 0.8;">Rota em Andamento</span>
-                    <span id="rotaProgressoTexto" style="font-weight: 600;">1/5</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-fill" id="rotaProgressoBar" style="width: 20%"></div>
-                </div>
-            </div>
-            <div id="rotaConteudo"></div>
-        </div>
-
-        <!-- PERFIL -->
-        <div id="telaPerfil" class="hidden">
-            <div class="perfil-header">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <button class="header-btn" onclick="voltarApp()" style="width: auto; padding: 8px 16px; border-radius: 20px; font-size: 14px;">← Voltar</button>
-                    <div style="width: 60px;"></div>
-                </div>
-                <div class="perfil-avatar">C</div>
-                <div class="perfil-nome">Carlos Silva</div>
-                <div class="perfil-email">carlos@email.com</div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-valor">847</div>
-                    <div class="stat-label">Entregas</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-valor">4.8</div>
-                    <div class="stat-label">Avaliação</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-valor">R$12.4k</div>
-                    <div class="stat-label">Ganhos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-valor">34</div>
-                    <div class="stat-label">Dias Ativo</div>
-                </div>
-            </div>
-
-            <div class="card" style="margin: 0 16px 16px;">
-                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
-                    <span style="color: #64748B;">Status</span>
-                    <span style="color: #10B981; font-weight: 600;">✓ Aprovado</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
-                    <span style="color: #64748B;">CNH</span>
-                    <span>123456789</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; padding: 12px 0;">
-                    <span style="color: #64748B;">Telefone</span>
-                    <span>(11) 99999-0001</span>
-                </div>
-            </div>
-
-            <div style="padding: 0 16px 16px;">
-                <button class="btn-primary btn-danger" onclick="sairConta()">
-                    🚪 Sair da Conta
-                </button>
-            </div>
-        </div>
-
-        <!-- BOTTOM NAV -->
-        <div class="bottom-nav" id="bottomNav" style="display: none;">
-            <button class="nav-item active" id="nav0" onclick="mudarAba(0)">
-                <span class="nav-icon">📡</span>
-                <span>Radar</span>
-            </button>
-            <button class="nav-item" id="nav1" onclick="mudarAba(1)">
-                <span class="nav-icon">📦</span>
-                <span>Entregas</span>
-            </button>
-        </div>
-
-    </div>
-
-    <!-- OVERLAY SCANNER -->
-    <div class="overlay-full" id="scannerOverlay">
-        <button style="position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); border: none; color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 10;" onclick="fecharScanner()">✕</button>
-        <div class="scanner-frame">
-            <div class="scanner-laser"></div>
-        </div>
-        <div style="color: white; margin-top: 24px; text-align: center;">
-            <p style="font-size: 16px; margin-bottom: 8px;">Posicione o código de barras</p>
-            <p style="font-size: 13px; opacity: 0.7;">Toque na tela para simular</p>
-        </div>
-    </div>
-
-    <!-- OVERLAY ASSINATURA -->
-    <div class="assinatura-overlay" id="assinaturaOverlay">
-        <div class="assinatura-header">
-            <span style="font-weight: 600;">Assinatura do Cliente</span>
-            <button onclick="fecharAssinatura()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">✕</button>
-        </div>
-        <div style="padding: 16px; background: #F8FAFC;">
-            <p style="font-size: 14px; color: #64748B;">Peça ao cliente que assine na área abaixo</p>
-        </div>
-        <div class="assinatura-area" id="assinaturaArea">
-            <div class="assinatura-placeholder" id="assinaturaPlaceholder">✍️ Toque e arraste para assinar</div>
-            <canvas class="assinatura-canvas" id="assinaturaCanvas"></canvas>
-        </div>
-        <div class="assinatura-botoes">
-            <button class="btn-outline" onclick="limparAssinatura()">🗑️ Limpar</button>
-            <button class="btn-primary" onclick="confirmarAssinatura()">✓ Confirmar</button>
-        </div>
-    </div>
-
-    <!-- SNACKBAR -->
-    <div class="snackbar" id="snackbar"></div>
-
-    <script>
-        // ============================================
-        // CONFIGURAÇÃO E ESTADO
-        // ============================================
-        const ESTADO = {
-            abaAtiva: 0,
-            rotaAtual: null,
-            paradaAtual: 0,
-            pacotesBipados: {},
-            motorista: null,
-            token: null
+    // TTS
+    if ("speechSynthesis" in window) {
+        synth = window.speechSynthesis;
+        var carregarVozes = function() {
+            vozes = synth.getVoices();
+            vozPT = vozes.find(function(v) { return v.lang.indexOf("pt") !== -1; });
+            if (!vozPT && vozes.length > 0) vozPT = vozes[0];
         };
-
-        // ============================================
-        // DADOS MOCK
-        // ============================================
-        const OFERTAS_MOCK = [
-            { id: 'ROTA-001', regiao_nome: 'Zona Norte - Santana', valor_frete: 95.50, total_pacotes: 15, distancia_km: 12.5, tempo_estimado_min: 180, hub_nome: 'Hub Norte' },
-            { id: 'ROTA-002', regiao_nome: 'Zona Sul - Moema', valor_frete: 87.00, total_pacotes: 12, distancia_km: 9.8, tempo_estimado_min: 150, hub_nome: 'Hub Centro' },
-            { id: 'ROTA-003', regiao_nome: 'Centro - República', valor_frete: 72.50, total_pacotes: 10, distancia_km: 7.2, tempo_estimado_min: 120, hub_nome: 'Hub Centro' },
-            { id: 'ROTA-004', regiao_nome: 'Zona Leste - Tatuapé', valor_frete: 110.00, total_pacotes: 18, distancia_km: 15.3, tempo_estimado_min: 210, hub_nome: 'Hub Leste' },
-            { id: 'ROTA-005', regiao_nome: 'Zona Oeste - Pinheiros', valor_frete: 78.00, total_pacotes: 11, distancia_km: 8.5, tempo_estimado_min: 135, hub_nome: 'Hub Oeste' },
-        ];
-
-        const MINHAS_ENTREGAS_MOCK = [
-            { id: 'ENT-001', regiao_nome: 'Zona Norte - Santana', status: 'EM_COLETA', progresso: 0 },
-            { id: 'ENT-002', regiao_nome: 'Centro - Sé', status: 'CONCLUIDA', progresso: 100 },
-        ];
-
-        const PARADAS_MOCK = [
-            { id: 1, destinatario_nome: 'Ana Paula Mendes', telefone: '(11) 98765-4321', endereco_completo: 'R. das Flores, 123 - Apto 42 - Centro', instrucoes: 'Deixar com o porteiro. Não tocar campainha.', status: 'PENDENTE' },
-            { id: 2, destinatario_nome: 'João Carlos Silva', telefone: '(11) 91234-5678', endereco_completo: 'Av. Paulista, 1500 - Sala 301 - Bela Vista', instrucoes: null, status: 'PENDENTE' },
-            { id: 3, destinatario_nome: 'Maria Fernanda Lima', telefone: '(11) 99876-5432', endereco_completo: 'R. Augusta, 789 - Consolação', instrucoes: 'Cliente pediu entrega após 14h.', status: 'PENDENTE' },
-            { id: 4, destinatario_nome: 'Pedro Henrique Costa', telefone: '(11) 95555-4444', endereco_completo: 'Al. Santos, 456 - Jardins', instrucoes: null, status: 'PENDENTE' },
-            { id: 5, destinatario_nome: 'Juliana Martins', telefone: '(11) 96666-7777', endereco_completo: 'R. Oscar Freire, 100 - Jardins', instrucoes: 'Prédio com portaria 24h.', status: 'PENDENTE' },
-        ];
-
-        // ============================================
-        // UTILITÁRIOS
-        // ============================================
-        function mostrarSnackbar(msg, tipo) {
-            const sb = document.getElementById('snackbar');
-            sb.textContent = msg;
-            sb.className = 'snackbar ' + (tipo || '');
-            // Força reflow para Safari
-            void sb.offsetWidth;
-            sb.classList.add('show');
-            setTimeout(function() {
-                sb.classList.remove('show');
-            }, 3000);
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = carregarVozes;
         }
+        carregarVozes();
+    }
 
-        function esconderSplash() {
-            var splash = document.getElementById('splash');
-            splash.classList.add('hidden');
-            setTimeout(function() {
-                splash.style.display = 'none';
-            }, 600);
-        }
+    // Se ja tem nome, pula splash
+    if (dados && dados.nome) {
+        tipoImg = dados.tipoImg || "desenho";
+        document.getElementById("splash").style.display = "none";
+        document.getElementById("app").classList.add("visivel");
+        mudarTela("falar", document.querySelector(".nav button"));
+    }
+}
 
-        function mostrarTela(id) {
-            // Esconde todas as telas
-            ['telaLogin', 'telaCadastro', 'telaApp', 'telaRota', 'telaPerfil'].forEach(function(t) {
-                document.getElementById(t).classList.add('hidden');
-            });
-            // Mostra a solicitada
-            document.getElementById(id).classList.remove('hidden');
-        }
+// ===== TIPO IMAGEM =====
+function escolherTipo(tipo) {
+    tipoImg = tipo;
+    document.getElementById("lblFoto").classList.remove("on");
+    document.getElementById("lblDesenho").classList.remove("on");
+    document.getElementById("lbl" + (tipo === "foto" ? "Foto" : "Desenho")).classList.add("on");
+}
 
-        // ============================================
-        // LOGIN / CADASTRO
-        // ============================================
-        function fazerLogin() {
-            var email = document.getElementById('loginEmail').value;
-            var senha = document.getElementById('loginSenha').value;
+// ===== ENTRAR =====
+function entrar() {
+    var nome = document.getElementById("nomeUser").value.trim();
+    if (!nome) {
+        alert("Digite seu nome!");
+        return;
+    }
+    dados.nome = nome;
+    dados.tipoImg = tipoImg;
+    if (lsOK) {
+        localStorage.setItem("falamigo_v3", JSON.stringify(dados));
+    }
 
-            if (!email || !senha) {
-                mostrarSnackbar('Preencha e-mail e senha', 'error');
-                return;
-            }
+    // Esconder splash, mostrar app
+    document.getElementById("splash").style.display = "none";
+    document.getElementById("app").classList.add("visivel");
 
-            var btn = document.getElementById('btnLogin');
-            var btnText = document.getElementById('btnLoginText');
-            btn.disabled = true;
-            btnText.textContent = 'ENTRANDO...';
+    // TTS boas-vindas
+    if (synth) {
+        setTimeout(function() {
+            var u = new SpeechSynthesisUtterance("Bem-vindo, " + nome + "!");
+            u.lang = "pt-BR";
+            u.rate = 1;
+            if (vozPT) u.voice = vozPT;
+            synth.cancel();
+            synth.speak(u);
+        }, 300);
+    }
 
-            // Simula delay de API
-            setTimeout(function() {
-                ESTADO.motorista = { id: '12345', nome: 'Carlos Silva', email: email };
-                ESTADO.token = 'token_mock_' + Date.now();
-                
-                btn.disabled = false;
-                btnText.textContent = 'ENTRAR';
-                
-                mostrarTela('telaApp');
-                document.getElementById('bottomNav').style.display = 'flex';
-                renderizarOfertas();
-                mostrarSnackbar('Bem-vindo, Carlos!', 'success');
-            }, 800);
-        }
+    mudarTela("falar", document.querySelector(".nav button"));
+}
 
-        function mostrarCadastro() {
-            mostrarTela('telaCadastro');
-        }
+// ===== TTS =====
+function falar(texto) {
+    if (!texto || !synth) return;
+    var u = new SpeechSynthesisUtterance(texto);
+    u.lang = "pt-BR";
+    u.rate = 1;
+    if (vozPT) u.voice = vozPT;
+    synth.cancel();
+    synth.speak(u);
+}
 
-        function voltarLogin() {
-            mostrarTela('telaLogin');
-        }
+// ===== DISPLAY =====
+function atualizarDisplay() {
+    var d = document.getElementById("display");
+    d.textContent = frase.length === 0 ? "Toque nos botoes para falar..." : frase.join(" > ");
+}
 
-        function fazerCadastro() {
-            var nome = document.getElementById('cadNome').value;
-            var email = document.getElementById('cadEmail').value;
-            
-            if (!nome || !email) {
-                mostrarSnackbar('Preencha nome e e-mail', 'error');
-                return;
-            }
+function addFrase(texto) {
+    frase.push(texto);
+    atualizarDisplay();
+    falar(texto);
+}
 
-            mostrarSnackbar('Cadastro realizado! Aguarde aprovação.', 'success');
-            setTimeout(function() {
-                voltarLogin();
-            }, 1500);
-        }
+function falarTudo() {
+    if (frase.length === 0) { falar("Adicione frases primeiro"); return; }
+    falar(frase.join(". "));
+}
 
-        // ============================================
-        // NAVEGAÇÃO APP
-        // ============================================
-        function mudarAba(aba) {
-            ESTADO.abaAtiva = aba;
-            
-            // Atualiza tabs
-            document.querySelectorAll('.tab-btn').forEach(function(t, i) {
-                t.classList.toggle('active', i === aba);
-            });
-            document.querySelectorAll('.nav-item').forEach(function(t, i) {
-                t.classList.toggle('active', i === aba);
-            });
+function desfazer() {
+    if (frase.length > 0) { frase.pop(); atualizarDisplay(); }
+}
 
-            if (aba === 0) renderizarOfertas();
-            else renderizarMinhasEntregas();
-        }
+function limpar() {
+    frase = [];
+    atualizarDisplay();
+}
 
-        function atualizarDados() {
-            mostrarSnackbar('Atualizando...', 'success');
-            setTimeout(function() {
-                if (ESTADO.abaAtiva === 0) renderizarOfertas();
-                else renderizarMinhasEntregas();
-            }, 500);
-        }
+// ===== TELAS =====
+function mudarTela(tela, btn) {
+    telaAtual = tela;
+    document.querySelectorAll(".nav button").forEach(function(b) { b.classList.remove("on"); });
+    if (btn) btn.classList.add("on");
+    var c = document.getElementById("content");
+    c.innerHTML = "";
+    if (tela === "falar") renderFalar(c);
+    else if (tela === "rotinas") renderRotinas(c);
+    else if (tela === "criar") renderCriar(c);
+    else if (tela === "config") renderConfig(c);
+}
 
-        function mostrarPerfil() {
-            mostrarTela('telaPerfil');
-            document.getElementById('bottomNav').style.display = 'none';
-        }
+// ===== TELA FALAR =====
+function renderFalar(c) {
+    var tabs = document.createElement("div");
+    tabs.className = "tabs";
+    dados.abas.forEach(function(aba, idx) {
+        var b = document.createElement("button");
+        b.className = "tab-btn" + (idx === 0 ? " active" : "");
+        b.style.background = aba.cor;
+        b.textContent = aba.nome;
+        b.onclick = function() {
+            document.querySelectorAll(".tab-btn").forEach(function(x) { x.classList.remove("active"); });
+            b.classList.add("active");
+            mostrarItens(grid, idx);
+        };
+        tabs.appendChild(b);
+    });
+    c.appendChild(tabs);
+    var grid = document.createElement("div");
+    grid.className = "grid";
+    c.appendChild(grid);
+    mostrarItens(grid, 0);
+}
 
-        function voltarApp() {
-            mostrarTela('telaApp');
-            document.getElementById('bottomNav').style.display = 'flex';
-        }
+function mostrarItens(grid, abaIdx) {
+    grid.innerHTML = "";
+    var aba = dados.abas[abaIdx];
+    if (!aba) return;
+    aba.itens.forEach(function(item) {
+        var b = document.createElement("button");
+        b.className = "card-btn";
+        b.style.background = aba.cor;
+        b.innerHTML = '<span class="ico">' + item.ico + '</span><span>' + item.texto + '</span>';
+        b.onclick = function() { addFrase(item.texto); };
+        grid.appendChild(b);
+    });
+}
 
-        function sairConta() {
-            location.reload();
-        }
+// ===== TELA ROTINAS =====
+function renderRotinas(c) {
+    var tit = document.createElement("h2");
+    tit.style.cssText = "color:#2C3E50;font-size:1.1rem;margin-bottom:12px;text-align:center";
+    tit.textContent = "Minhas Rotinas";
+    c.appendChild(tit);
 
-        // ============================================
-        // RADAR DE OFERTAS
-        // ============================================
-        function renderizarOfertas() {
-            var container = document.getElementById('conteudoApp');
-            
-            if (OFERTAS_MOCK.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📡</div><p>Nenhuma oferta disponível</p><p style="font-size: 14px; margin-top: 8px;">Fique ligado! Novas rotas aparecem a todo momento.</p></div>';
-                return;
-            }
+    rotinas.forEach(function(r, idx) {
+        var card = document.createElement("div");
+        card.className = "routine-card";
 
-            var html = '';
-            OFERTAS_MOCK.forEach(function(rota) {
-                html += '<div class="card">' +
-                    '<div class="oferta-header">' +
-                        '<div>' +
-                            '<div class="oferta-regiao">' + rota.regiao_nome + '</div>' +
-                            '<div class="oferta-info">' + rota.total_pacotes + ' pacotes · ' + rota.distancia_km + ' km</div>' +
-                        '</div>' +
-                        '<div class="oferta-valor">R$ ' + rota.valor_frete.toFixed(2) + '</div>' +
-                    '</div>' +
-                    '<div class="tags-row">' +
-                        '<div class="tag">⏱️ ' + (rota.tempo_estimado_min / 60).toFixed(1) + 'h estimadas</div>' +
-                        '<div class="tag">📍 ' + rota.hub_nome + '</div>' +
-                    '</div>' +
-                    '<button class="btn-primary" onclick="aceitarRota(\'' + rota.id + '\', ' + rota.valor_frete + ')">' +
-                        '✓ ACEITAR E INICIAR ROTA' +
-                    '</button>' +
-                '</div>';
-            });
-            
-            container.innerHTML = html;
-        }
+        var h3 = document.createElement("h3");
+        h3.innerHTML = '<span class="ico">' + r.ico + '</span>' + r.nome;
+        card.appendChild(h3);
 
-        function aceitarRota(rotaId, valor) {
-            mostrarSnackbar('Rota aceita! Frete: R$ ' + valor.toFixed(2), 'success');
-            ESTADO.rotaAtual = rotaId;
-            ESTADO.paradaAtual = 0;
-            ESTADO.pacotesBipados = {};
-            
-            setTimeout(function() {
-                mostrarTela('telaRota');
-                document.getElementById('bottomNav').style.display = 'none';
-                renderizarRotaAtiva();
-            }, 800);
-        }
+        var steps = document.createElement("div");
+        steps.className = "routine-steps";
+        r.passos.forEach(function(p, i) {
+            var wrap = document.createElement("div");
+            wrap.className = "routine-step-wrap";
 
-        // ============================================
-        // MINHAS ENTREGAS
-        // ============================================
-        function renderizarMinhasEntregas() {
-            var container = document.getElementById('conteudoApp');
-            
-            if (MINHAS_ENTREGAS_MOCK.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📦</div><p>Você ainda não aceitou nenhuma entrega</p></div>';
-                return;
-            }
+            var step = document.createElement("div");
+            step.className = "routine-step";
 
-            var html = '';
-            MINHAS_ENTREGAS_MOCK.forEach(function(ent) {
-                var cor = ent.status === 'EM_COLETA' ? '#F59E0B' : 
-                         ent.status === 'EM_ROTA' ? '#3B82F6' : '#10B981';
-                var icone = ent.status === 'EM_COLETA' ? '🏭' : 
-                           ent.status === 'EM_ROTA' ? '🚚' : '✓';
-                var texto = ent.status === 'EM_COLETA' ? 'Em coleta no hub' :
-                           ent.status === 'EM_ROTA' ? 'Em entrega' : 'Finalizada';
-                var podeClicar = ent.status !== 'CONCLUIDA';
-                
-                html += '<div class="card" style="' + (podeClicar ? 'cursor: pointer;' : '') + '" ' +
-                    (podeClicar ? 'onclick="continuarEntrega(\'' + ent.id + '\')"' : '') + '>' +
-                    '<div style="display: flex; align-items: center; gap: 12px;">' +
-                        '<div style="width: 48px; height: 48px; border-radius: 50%; background: ' + cor + '20; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">' +
-                            icone +
-                        '</div>' +
-                        '<div style="flex: 1;">' +
-                            '<div style="font-weight: 600;">' + ent.regiao_nome + '</div>' +
-                            '<div style="font-size: 13px; color: #64748B;">' + texto + '</div>' +
-                        '</div>' +
-                        (podeClicar ? '<span style="font-size: 20px; color: #CBD5E1;">›</span>' : '') +
-                    '</div>' +
-                '</div>';
-            });
-            
-            container.innerHTML = html;
-        }
+            var num = document.createElement("div");
+            num.className = "num";
+            num.textContent = i + 1;
+            step.appendChild(num);
 
-        function continuarEntrega(id) {
-            ESTADO.rotaAtual = id;
-            mostrarTela('telaRota');
-            document.getElementById('bottomNav').style.display = 'none';
-            renderizarRotaAtiva();
-        }
-
-        // ============================================
-        // ROTA ATIVA
-        // ============================================
-        function renderizarRotaAtiva() {
-            var progresso = ((ESTADO.paradaAtual + 1) / PARADAS_MOCK.length) * 100;
-            document.getElementById('rotaProgressoTexto').textContent = (ESTADO.paradaAtual + 1) + '/' + PARADAS_MOCK.length;
-            document.getElementById('rotaProgressoBar').style.width = progresso + '%';
-
-            var parada = PARADAS_MOCK[ESTADO.paradaAtual];
-            var jaBipado = ESTADO.pacotesBipados[ESTADO.paradaAtual] || false;
-
-            var html = '<div class="parada-card">' +
-                '<div class="parada-header">' +
-                    '<div class="parada-numero">' + (ESTADO.paradaAtual + 1) + '</div>' +
-                    '<div>' +
-                        '<div class="parada-nome">' + parada.destinatario_nome + '</div>' +
-                        '<div style="color: #64748B; font-size: 13px;">' + parada.telefone + '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="parada-endereco">' + parada.endereco_completo + '</div>';
-
-            if (parada.instrucoes) {
-                html += '<div class="instrucao-box">ℹ️ ' + parada.instrucoes + '</div>';
-            }
-
-            html += '<div class="acoes-list">';
-
-            if (!jaBipado) {
-                html += '<button class="acao-item" onclick="abrirScanner()" style="border-color: #FDE68A; background: #FFFBEB;">' +
-                    '<div class="acao-icon" style="background: #FEF3C7;">📷</div>' +
-                    '<div class="acao-info">' +
-                        '<div class="acao-titulo">Bipar Pacote</div>' +
-                        '<div class="acao-sub">Escaneie a etiqueta</div>' +
-                    '</div>' +
-                '</button>';
+            var img = document.createElement("div");
+            img.className = "img";
+            if (tipoImg === "foto") {
+                img.innerHTML = '<span style="font-size:2rem">' + r.ico + '</span>';
             } else {
-                html += '<div class="acao-item" style="border-color: #A7F3D0; background: #ECFDF5; opacity: 0.8;">' +
-                    '<div class="acao-icon" style="background: #D1FAE5;">✓</div>' +
-                    '<div class="acao-info">' +
-                        '<div class="acao-titulo" style="color: #10B981;">Pacote Validado</div>' +
-                        '<div class="acao-sub">Código confirmado</div>' +
-                    '</div>' +
-                '</div>';
+                img.innerHTML = svgs[p.svg] || '<span style="font-size:2rem">' + r.ico + '</span>';
             }
+            step.appendChild(img);
 
-            html += '<button class="acao-item" onclick="abrirNavegacao(\'' + parada.endereco_completo + '\')">' +
-                '<div class="acao-icon" style="background: #DBEAFE;">🧭</div>' +
-                '<div class="acao-info">' +
-                    '<div class="acao-titulo">Iniciar Navegação</div>' +
-                    '<div class="acao-sub">Abrir Google Maps</div>' +
-                '</div>' +
-            '</button>';
+            var txt = document.createElement("div");
+            txt.className = "txt";
+            txt.textContent = p.txt;
+            step.appendChild(txt);
 
-            if (jaBipado) {
-                html += '<button class="acao-item" onclick="abrirAssinatura()" style="border-color: #A7F3D0; background: #ECFDF5;">' +
-                    '<div class="acao-icon" style="background: #D1FAE5;">📸</div>' +
-                    '<div class="acao-info">' +
-                        '<div class="acao-titulo">Entrega Concluída</div>' +
-                        '<div class="acao-sub">Foto + Assinatura do cliente</div>' +
-                    '</div>' +
-                '</button>' +
-                '<button class="acao-item" onclick="mostrarInsucesso()" style="border-color: #FECACA; background: #FEF2F2;">' +
-                    '<div class="acao-icon" style="background: #FEE2E2;">❌</div>' +
-                    '<div class="acao-info">' +
-                        '<div class="acao-titulo">Destinatário Ausente</div>' +
-                        '<div class="acao-sub">Logística reversa</div>' +
-                    '</div>' +
-                '</button>';
-            }
+            wrap.appendChild(step);
+            steps.appendChild(wrap);
+        });
+        card.appendChild(steps);
 
-            html += '</div></div>';
-            document.getElementById('rotaConteudo').innerHTML = html;
-        }
+        var play = document.createElement("button");
+        play.className = "routine-play";
+        play.textContent = "VER PASSO A PASSO";
+        play.onclick = function() { abrirModalRotina(idx); };
+        card.appendChild(play);
 
-        function abrirScanner() {
-            document.getElementById('scannerOverlay').classList.add('active');
-            // Simula bip ao tocar na tela
-            var overlay = document.getElementById('scannerOverlay');
-            overlay.onclick = function(e) {
-                if (e.target === overlay || e.target.classList.contains('scanner-frame')) {
-                    fecharScanner();
-                    ESTADO.pacotesBipados[ESTADO.paradaAtual] = true;
-                    mostrarSnackbar('Pacote PKG-' + Date.now() + ' validado!', 'success');
-                    renderizarRotaAtiva();
-                }
-            };
-        }
+        c.appendChild(card);
+    });
+}
 
-        function fecharScanner() {
-            document.getElementById('scannerOverlay').classList.remove('active');
-        }
+function abrirModalRotina(idx) {
+    var r = rotinas[idx];
+    var box = document.getElementById("modalBox");
+    box.innerHTML = '<h2>' + r.ico + ' ' + r.nome + '</h2>';
 
-        function abrirNavegacao(endereco) {
-            var url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(endereco);
-            window.open(url, '_blank');
-        }
+    r.passos.forEach(function(p, i) {
+        var step = document.createElement("div");
+        step.className = "modal-step";
 
-        function abrirAssinatura() {
-            document.getElementById('assinaturaOverlay').classList.add('active');
-            initAssinatura();
-        }
+        var num = document.createElement("div");
+        num.className = "num";
+        num.textContent = i + 1;
+        step.appendChild(num);
 
-        function fecharAssinatura() {
-            document.getElementById('assinaturaOverlay').classList.remove('active');
-        }
-
-        function mostrarInsucesso() {
-            var motivo = prompt('Informe o motivo da não entrega:', 'Destinatário ausente');
-            if (motivo) {
-                mostrarSnackbar('Entrega marcada como insucesso: ' + motivo, 'error');
-                proximaParada();
-            }
-        }
-
-        function proximaParada() {
-            if (ESTADO.paradaAtual < PARADAS_MOCK.length - 1) {
-                ESTADO.paradaAtual++;
-                ESTADO.pacotesBipados[ESTADO.paradaAtual] = false;
-                renderizarRotaAtiva();
-            } else {
-                mostrarSnackbar('🎉 Parabéns! Rota concluída!', 'success');
-                setTimeout(function() {
-                    mostrarTela('telaApp');
-                    document.getElementById('bottomNav').style.display = 'flex';
-                    mudarAba(1);
-                }, 2000);
-            }
-        }
-
-        // ============================================
-        // ASSINATURA DIGITAL (Canvas Touch Safari)
-        // ============================================
-        var canvas, ctx, desenhando = false;
-
-        function initAssinatura() {
-            canvas = document.getElementById('assinaturaCanvas');
-            var area = document.getElementById('assinaturaArea');
-            
-            // Aguarda layout
-            setTimeout(function() {
-                canvas.width = area.offsetWidth;
-                canvas.height = area.offsetHeight;
-                
-                ctx = canvas.getContext('2d');
-                ctx.strokeStyle = '#1E293B';
-                ctx.lineWidth = 2.5;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-
-                var lastX = 0, lastY = 0;
-
-                function getPos(e) {
-                    var rect = canvas.getBoundingClientRect();
-                    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    var clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                    return {
-                        x: clientX - rect.left,
-                        y: clientY - rect.top
-                    };
-                }
-
-                function startDraw(e) {
-                    e.preventDefault();
-                    desenhando = true;
-                    var pos = getPos(e);
-                    lastX = pos.x;
-                    lastY = pos.y;
-                    document.getElementById('assinaturaPlaceholder').style.display = 'none';
-                }
-
-                function draw(e) {
-                    if (!desenhando) return;
-                    e.preventDefault();
-                    var pos = getPos(e);
-                    
-                    ctx.beginPath();
-                    ctx.moveTo(lastX, lastY);
-                    ctx.lineTo(pos.x, pos.y);
-                    ctx.stroke();
-
-                    lastX = pos.x;
-                    lastY = pos.y;
-                }
-
-                function stopDraw() {
-                    desenhando = false;
-                }
-
-                // Remove listeners antigos
-                canvas.removeEventListener('touchstart', startDraw);
-                canvas.removeEventListener('touchmove', draw);
-                canvas.removeEventListener('touchend', stopDraw);
-                canvas.removeEventListener('mousedown', startDraw);
-                canvas.removeEventListener('mousemove', draw);
-                canvas.removeEventListener('mouseup', stopDraw);
-                canvas.removeEventListener('mouseout', stopDraw);
-
-                // Adiciona novos
-                canvas.addEventListener('touchstart', startDraw, {passive: false});
-                canvas.addEventListener('touchmove', draw, {passive: false});
-                canvas.addEventListener('touchend', stopDraw);
-                canvas.addEventListener('mousedown', startDraw);
-                canvas.addEventListener('mousemove', draw);
-                canvas.addEventListener('mouseup', stopDraw);
-                canvas.addEventListener('mouseout', stopDraw);
-            }, 100);
-        }
-
-        function limparAssinatura() {
-            if (ctx) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                document.getElementById('assinaturaPlaceholder').style.display = 'flex';
-            }
-        }
-
-        function confirmarAssinatura() {
-            fecharAssinatura();
-            mostrarSnackbar('Entrega finalizada com sucesso!', 'success');
-            setTimeout(function() {
-                proximaParada();
-            }, 1000);
-        }
-
-        // ============================================
-        // INICIALIZAÇÃO - Safari Safe
-        // ============================================
-        function initApp() {
-            // Garante que o splash some mesmo se algo falhar
-            setTimeout(function() {
-                esconderSplash();
-            }, 2500);
-
-            // Previne scroll bounce no Safari
-            document.addEventListener('touchmove', function(e) {
-                if (e.target.closest('#app-container') === null) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
-            // Previne zoom no double-tap
-            var lastTouchEnd = 0;
-            document.addEventListener('touchend', function(e) {
-                var now = Date.now();
-                if (now - lastTouchEnd <= 300) {
-                    e.preventDefault();
-                }
-                lastTouchEnd = now;
-            }, false);
-
-            // Corrige viewport no Safari iOS
-            var setVH = function() {
-                var vh = window.innerHeight * 0.01;
-                document.documentElement.style.setProperty('--vh', vh + 'px');
-            };
-            setVH();
-            window.addEventListener('resize', setVH);
-            window.addEventListener('orientationchange', function() {
-                setTimeout(setVH, 100);
-            });
-        }
-
-        // Inicia quando DOM estiver pronto
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
+        var img = document.createElement("div");
+        img.className = "img";
+        if (tipoImg === "foto") {
+            img.innerHTML = '<span style="font-size:2.5rem">' + r.ico + '</span>';
         } else {
-            initApp();
+            img.innerHTML = svgs[p.svg] || '<span style="font-size:2.5rem">' + r.ico + '</span>';
         }
-    </script>
+        step.appendChild(img);
+
+        var info = document.createElement("div");
+        info.className = "info";
+        info.innerHTML = '<h4>' + p.txt + '</h4><p>Toque para ouvir</p>';
+        step.appendChild(info);
+
+        step.onclick = function() { falar(p.txt); };
+        box.appendChild(step);
+    });
+
+    var btn = document.createElement("button");
+    btn.style.background = "#27AE60";
+    btn.textContent = "FALAR TUDO";
+    btn.onclick = function() {
+        falar(r.passos.map(function(p) { return p.txt; }).join(". Depois, "));
+    };
+    box.appendChild(btn);
+
+    var btn2 = document.createElement("button");
+    btn2.style.background = "#E74C3C";
+    btn2.textContent = "FECHAR";
+    btn2.onclick = function() { document.getElementById("modal").classList.remove("visivel"); };
+    box.appendChild(btn2);
+
+    document.getElementById("modal").classList.add("visivel");
+}
+
+function fecharModal(e) {
+    if (e.target.id === "modal") {
+        document.getElementById("modal").classList.remove("visivel");
+    }
+}
+
+// ===== TELA CRIAR =====
+function renderCriar(c) {
+    var form1 = document.createElement("div");
+    form1.className = "add-form";
+    form1.innerHTML = '<h3>Criar Nova Aba</h3><input type="text" id="novaAbaNome" placeholder="Nome da aba" autocapitalize="words"><select id="novaAbaCor"><option value="#27AE60">Verde</option><option value="#3498DB">Azul</option><option value="#F39C12">Laranja</option><option value="#E91E63">Rosa</option><option value="#9C27B0">Roxo</option><option value="#E74C3C">Vermelho</option><option value="#00BCD4">Ciano</option><option value="#795548">Marrom</option></select><button onclick="criarAba()">CRIAR ABA</button>';
+    c.appendChild(form1);
+
+    var form2 = document.createElement("div");
+    form2.className = "add-form";
+    var opts = dados.abas.map(function(a, i) { return '<option value="' + i + '">' + a.nome + '</option>'; }).join("");
+    form2.innerHTML = '<h3>Adicionar Botao</h3><select id="itemAba">' + opts + '</select><input type="text" id="itemIco" placeholder="Icone (ex: 🍕)" maxlength="10"><input type="text" id="itemTexto" placeholder="O que falar?" autocapitalize="sentences"><button onclick="criarItem()">ADICIONAR BOTAO</button>';
+    c.appendChild(form2);
+}
+
+function criarAba() {
+    var nome = document.getElementById("novaAbaNome").value.trim();
+    var cor = document.getElementById("novaAbaCor").value;
+    if (!nome) { toast("Digite um nome!"); return; }
+    dados.abas.push({ nome: nome, cor: cor, itens: [] });
+    salvar();
+    toast("Aba criada: " + nome);
+    document.getElementById("novaAbaNome").value = "";
+}
+
+function criarItem() {
+    var abaIdx = parseInt(document.getElementById("itemAba").value);
+    var ico = document.getElementById("itemIco").value.trim() || "(*)";
+    var texto = document.getElementById("itemTexto").value.trim();
+    if (!texto) { toast("Digite o texto!"); return; }
+    dados.abas[abaIdx].itens.push({ ico: ico, texto: texto });
+    salvar();
+    toast("Botao adicionado!");
+    document.getElementById("itemIco").value = "";
+    document.getElementById("itemTexto").value = "";
+}
+
+function salvar() {
+    if (lsOK) {
+        localStorage.setItem("falamigo_v3", JSON.stringify(dados));
+    }
+}
+
+// ===== TELA CONFIG =====
+function renderConfig(c) {
+    var form = document.createElement("div");
+    form.className = "add-form";
+    form.innerHTML = '<h3>Configuracoes</h3><p style="margin-bottom:10px;color:#666">Nome: <strong>' + (dados.nome || "Nao definido") + '</strong></p><p style="margin-bottom:10px;color:#666">Imagens: <strong>' + (dados.tipoImg === "foto" ? "Fotos Reais" : "Desenhos Ilustrados") + '</strong></p><button onclick="resetar()" style="background:#E74C3C;width:100%;padding:12px;border:none;border-radius:8px;color:white;font-size:1rem;font-weight:700;cursor:pointer">RESETAR TUDO</button>';
+    c.appendChild(form);
+}
+
+function resetar() {
+    if (!confirm("Isso apaga TUDO. Continuar?")) return;
+    if (lsOK) localStorage.removeItem("falamigo_v3");
+    dados = JSON.parse(JSON.stringify(dadosPadrao));
+    toast("Dados resetados! Recarregue a pagina.");
+}
+
+// ===== UTIL =====
+function toast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(function() { t.classList.remove("show"); }, 3000);
+}
+
+// ===== iOS FIXES =====
+document.addEventListener("gesturestart", function(e) { e.preventDefault(); });
+document.addEventListener("gesturechange", function(e) { e.preventDefault(); });
+document.addEventListener("gestureend", function(e) { e.preventDefault(); });
+
+// Ativa TTS no primeiro toque
+document.body.addEventListener("touchstart", function() {
+    if (synth && !synth.speaking) {
+        var u = new SpeechSynthesisUtterance("");
+        synth.speak(u);
+        synth.cancel();
+    }
+}, { once: true });
+
+// Iniciar
+init();
+</script>
 </body>
 </html>
