@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#1E3A5F">
+    <title>LogiFlex - Entregador</title>
+    <style>
+        /* ============================================
+           RESET E BASE - Compatível com Safari iOS
+           ============================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #1E3A5F;
+            color: #1E293B;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: fixed;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: none;
+        }
+
+        /* Fix para Safari não esconder a splash */
+        #app-container {
+            height: 100%;
+            width: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            background: #F5F6FA;
+        }
+
+        /* ============================================
+           SPLASH SCREEN - Safari Safe
+           ============================================ */
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #1E3A5F;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            transition: opacity 0.6s ease-out;
+            -webkit-transition: opacity 0.6s ease-out;
+        }
+
+        #splash.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: bounceSafari 1.2s ease-in-out infinite;
+            -webkit-animation: bounceSafari 1.2s ease-in-out infinite;
+        }
+
+        @keyframes bounceSafari {
+            0%, 100% { -webkit-transform: translateY(0); transform: translateY(0); }
+            50% { -webkit-transform: translateY(-12px); transform: translateY(-12px); }
+        }
+
+        .splash-title {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .splash-sub {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        .splash-loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            margin-top: 40px;
+            animation: spinSafari 1s linear infinite;
+            -webkit-animation: spinSafari 1s linear infinite;
+        }
+
+        @keyframes spinSafari {
+            to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+        }
+
+        /* ============================================
+           LOGIN - Safari Safe
+           ============================================ */
+        .tela-login {
+            min-height: 100%;
+            background: #1E3A5F;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin: 40px 0 30px;
+        }
+
+        .login-logo-icon {
+            font-size: 72px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .login-logo h1 {
+            color: white;
+            font-size: 28px;
+            letter-spacing: 2px;
+        }
+
+        .login-logo p {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        .input-group {
+            margin-bottom: 14px;
+        }
+
+        .input-group label {
+            display: block;
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .input-safari {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 16px;
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+        }
+
+        .input-safari::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .input-safari:focus {
+            border-color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .btn-safari {
+            width: 100%;
+            padding: 18px;
+            border-radius: 12px;
+            border: none;
+            background: white;
+            color: #1E3A5F;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            margin-top: 10px;
+            transition: transform 0.1s;
+            -webkit-transition: transform 0.1s;
+        }
+
+        .btn-safari:active {
+            -webkit-transform: scale(0.97);
+            transform: scale(0.97);
+        }
+
+        .btn-safari:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .login-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-links a {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        /* ============================================
+           APP PRINCIPAL
+           ============================================ */
+        .app-header {
+            background: #1E3A5F;
+            color: white;
+            padding: 16px 20px;
+            padding-top: max(16px, env(safe-area-inset-top));
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-header h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .header-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        /* Tabs */
+        .tabs-bar {
+            display: flex;
+            background: #1E3A5F;
+            padding: 0 16px 12px;
+            gap: 8px;
+            position: sticky;
+            top: 56px;
+            z-index: 99;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #1E3A5F;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            margin: 12px;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .oferta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .oferta-regiao {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1E3A5F;
+        }
+
+        .oferta-info {
+            color: #64748B;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .oferta-valor {
+            font-size: 22px;
+            font-weight: 800;
+            color: #10B981;
+        }
+
+        .tags-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #F1F5F9;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #64748B;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: #1E3A5F;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            -webkit-appearance: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:active {
+            opacity: 0.9;
+        }
+
+        .btn-success {
+            background: #10B981;
+        }
+
+        .btn-danger {
+            background: #EF4444;
+        }
+
+        /* Loading */
+        .loading-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            gap: 16px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #E2E8F0;
+            border-top-color: #1E3A5F;
+            border-radius: 50%;
+            animation: spinSafari 1s linear infinite;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94A3B8;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Bottom nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            border: none;
+            background: none;
+            color: #94A3B8;
+            font-size: 11px;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        .nav-item.active {
+            color: #1E3A5F;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        /* Snackbar */
+        .snackbar {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            -webkit-transform: translateX(-50%) translateY(100px);
+            background: #1E293B;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s;
+            -webkit-transition: all 0.3s;
+            max-width: 90%;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .snackbar.show {
+            transform: translateX(-50%) translateY(0);
+            -webkit-transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .snackbar.success { background: #10B981; }
+        .snackbar.error { background: #EF4444; }
+
+        /* Rota Ativa */
+        .rota-progress-bar {
+            background: #1E3A5F;
+            color: white;
+            padding: 16px 20px;
+            padding-top: max(16px, env(safe-area-inset-top));
+        }
+
+        .progress-track {
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #10B981;
+            border-radius: 2px;
+            transition: width 0.5s;
+            -webkit-transition: width 0.5s;
+        }
+
+        .parada-card {
+            background: white;
+            margin: 12px;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .parada-header {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .parada-numero {
+            width: 44px;
+            height: 44px;
+            background: #1E3A5F;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .parada-nome {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .parada-endereco {
+            color: #64748B;
+            font-size: 14px;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .instrucao-box {
+            background: #FEF3C7;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #92400E;
+            line-height: 1.4;
+        }
+
+        .acoes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .acao-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+            background: white;
+            cursor: pointer;
+            -webkit-appearance: none;
+            text-align: left;
+            width: 100%;
+        }
+
+        .acao-item:active {
+            background: #F8FAFC;
+        }
+
+        .acao-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .acao-info {
+            flex: 1;
+        }
+
+        .acao-titulo {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .acao-sub {
+            font-size: 13px;
+            color: #64748B;
+            margin-top: 2px;
+        }
+
+        /* Overlay Scanner */
+        .overlay-full {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 20000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay-full.active {
+            display: flex;
+        }
+
+        .scanner-frame {
+            width: 280px;
+            height: 200px;
+            border: 3px solid #EF4444;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scanner-laser {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #EF4444;
+            box-shadow: 0 0 8px #EF4444;
+            animation: laserScan 2s ease-in-out infinite;
+            -webkit-animation: laserScan 2s ease-in-out infinite;
+        }
+
+        @keyframes laserScan {
+            0%, 100% { top: 0; }
+            50% { top: 100%; }
+        }
+
+        /* Overlay Assinatura */
+        .assinatura-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 20000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .assinatura-overlay.active {
+            display: flex;
+        }
+
+        .assinatura-header {
+            background: #1E3A5F;
+            color: white;
+            padding: 16px 20px;
+            padding-top: max(16px, env(safe-area-inset-top));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .assinatura-area {
+            flex: 1;
+            margin: 16px;
+            border: 2px dashed #CBD5E1;
+            border-radius: 12px;
+            position: relative;
+            touch-action: none;
+        }
+
+        .assinatura-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94A3B8;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .assinatura-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .assinatura-botoes {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom));
+        }
+
+        .btn-outline {
+            flex: 1;
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #E2E8F0;
+            background: white;
+            color: #64748B;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        /* Perfil */
+        .perfil-header {
+            background: #1E3A5F;
+            color: white;
+            padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            text-align: center;
+        }
+
+        .perfil-avatar {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .perfil-nome {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .perfil-email {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-valor {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1E3A5F;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748B;
+            margin-top: 4px;
+        }
+
+        /* Esconde elementos */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         SPLASH SCREEN - Safari Safe
+         ============================================ -->
+    <div id="splash">
+        <div class="splash-icon">🚚</div>
+        <div class="splash-title">LogiFlex</div>
+        <div class="splash-sub">Entregas Inteligentes</div>
+        <div class="splash-loader"></div>
+    </div>
+
+    <!-- ============================================
+         APP CONTAINER
+         ============================================ -->
+    <div id="app-container">
+
+        <!-- TELA LOGIN -->
+        <div id="telaLogin" class="tela-login">
+            <div class="login-logo">
+                <span class="login-logo-icon">🚚</span>
+                <h1>LogiFlex</h1>
+                <p>Entregador</p>
+            </div>
+
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email" class="input-safari" id="loginEmail" value="carlos@email.com" placeholder="seu@email.com" autocomplete="off" autocorrect="off" autocapitalize="off">
+            </div>
+
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" class="input-safari" id="loginSenha" value="123456" placeholder="••••••" autocomplete="off">
+            </div>
+
+            <button class="btn-safari" id="btnLogin" onclick="fazerLogin()">
+                <span id="btnLoginText">ENTRAR</span>
+            </button>
+
+            <div class="login-links">
+                <a href="#" onclick="mostrarCadastro(); return false;">Não tem conta? Cadastre-se</a>
+            </div>
+        </div>
+
+        <!-- TELA CADASTRO -->
+        <div id="telaCadastro" class="tela-login hidden">
+            <div class="login-logo">
+                <span class="login-logo-icon">📝</span>
+                <h1>Cadastro</h1>
+                <p>Crie sua conta de entregador</p>
+            </div>
+
+            <div class="input-group">
+                <label>Nome completo</label>
+                <input type="text" class="input-safari" id="cadNome" placeholder="Seu nome" autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email" class="input-safari" id="cadEmail" placeholder="seu@email.com" autocomplete="off" autocorrect="off" autocapitalize="off">
+            </div>
+
+            <div class="input-group">
+                <label>Telefone</label>
+                <input type="tel" class="input-safari" id="cadTelefone" placeholder="(11) 99999-0000" autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>CPF</label>
+                <input type="text" class="input-safari" id="cadCpf" placeholder="123.456.789-00" autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" class="input-safari" id="cadSenha" placeholder="Mínimo 6 caracteres" autocomplete="off">
+            </div>
+
+            <button class="btn-safari" onclick="fazerCadastro()">
+                CADASTRAR
+            </button>
+
+            <div class="login-links">
+                <a href="#" onclick="voltarLogin(); return false;">Já tem conta? Entre aqui</a>
+            </div>
+        </div>
+
+        <!-- APP PRINCIPAL -->
+        <div id="telaApp" class="hidden">
+            <div class="app-header">
+                <h1>LogiFlex</h1>
+                <div class="header-btns">
+                    <button class="header-btn" onclick="mostrarPerfil()">👤</button>
+                    <button class="header-btn" onclick="atualizarDados()">🔄</button>
+                </div>
+            </div>
+
+            <div class="tabs-bar">
+                <button class="tab-btn active" id="tab0" onclick="mudarAba(0)">📡 Radar</button>
+                <button class="tab-btn" id="tab1" onclick="mudarAba(1)">📦 Entregas</button>
+            </div>
+
+            <div id="conteudoApp"></div>
+        </div>
+
+        <!-- ROTA ATIVA -->
+        <div id="telaRota" class="hidden">
+            <div class="rota-progress-bar">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 14px; opacity: 0.8;">Rota em Andamento</span>
+                    <span id="rotaProgressoTexto" style="font-weight: 600;">1/5</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="rotaProgressoBar" style="width: 20%"></div>
+                </div>
+            </div>
+            <div id="rotaConteudo"></div>
+        </div>
+
+        <!-- PERFIL -->
+        <div id="telaPerfil" class="hidden">
+            <div class="perfil-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <button class="header-btn" onclick="voltarApp()" style="width: auto; padding: 8px 16px; border-radius: 20px; font-size: 14px;">← Voltar</button>
+                    <div style="width: 60px;"></div>
+                </div>
+                <div class="perfil-avatar">C</div>
+                <div class="perfil-nome">Carlos Silva</div>
+                <div class="perfil-email">carlos@email.com</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-valor">847</div>
+                    <div class="stat-label">Entregas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-valor">4.8</div>
+                    <div class="stat-label">Avaliação</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-valor">R$12.4k</div>
+                    <div class="stat-label">Ganhos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-valor">34</div>
+                    <div class="stat-label">Dias Ativo</div>
+                </div>
+            </div>
+
+            <div class="card" style="margin: 0 16px 16px;">
+                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
+                    <span style="color: #64748B;">Status</span>
+                    <span style="color: #10B981; font-weight: 600;">✓ Aprovado</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
+                    <span style="color: #64748B;">CNH</span>
+                    <span>123456789</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                    <span style="color: #64748B;">Telefone</span>
+                    <span>(11) 99999-0001</span>
+                </div>
+            </div>
+
+            <div style="padding: 0 16px 16px;">
+                <button class="btn-primary btn-danger" onclick="sairConta()">
+                    🚪 Sair da Conta
+                </button>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAV -->
+        <div class="bottom-nav" id="bottomNav" style="display: none;">
+            <button class="nav-item active" id="nav0" onclick="mudarAba(0)">
+                <span class="nav-icon">📡</span>
+                <span>Radar</span>
+            </button>
+            <button class="nav-item" id="nav1" onclick="mudarAba(1)">
+                <span class="nav-icon">📦</span>
+                <span>Entregas</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- OVERLAY SCANNER -->
+    <div class="overlay-full" id="scannerOverlay">
+        <button style="position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); border: none; color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 10;" onclick="fecharScanner()">✕</button>
+        <div class="scanner-frame">
+            <div class="scanner-laser"></div>
+        </div>
+        <div style="color: white; margin-top: 24px; text-align: center;">
+            <p style="font-size: 16px; margin-bottom: 8px;">Posicione o código de barras</p>
+            <p style="font-size: 13px; opacity: 0.7;">Toque na tela para simular</p>
+        </div>
+    </div>
+
+    <!-- OVERLAY ASSINATURA -->
+    <div class="assinatura-overlay" id="assinaturaOverlay">
+        <div class="assinatura-header">
+            <span style="font-weight: 600;">Assinatura do Cliente</span>
+            <button onclick="fecharAssinatura()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">✕</button>
+        </div>
+        <div style="padding: 16px; background: #F8FAFC;">
+            <p style="font-size: 14px; color: #64748B;">Peça ao cliente que assine na área abaixo</p>
+        </div>
+        <div class="assinatura-area" id="assinaturaArea">
+            <div class="assinatura-placeholder" id="assinaturaPlaceholder">✍️ Toque e arraste para assinar</div>
+            <canvas class="assinatura-canvas" id="assinaturaCanvas"></canvas>
+        </div>
+        <div class="assinatura-botoes">
+            <button class="btn-outline" onclick="limparAssinatura()">🗑️ Limpar</button>
+            <button class="btn-primary" onclick="confirmarAssinatura()">✓ Confirmar</button>
+        </div>
+    </div>
+
+    <!-- SNACKBAR -->
+    <div class="snackbar" id="snackbar"></div>
+
+    <script>
+        // ============================================
+        // CONFIGURAÇÃO E ESTADO
+        // ============================================
+        const ESTADO = {
+            abaAtiva: 0,
+            rotaAtual: null,
+            paradaAtual: 0,
+            pacotesBipados: {},
+            motorista: null,
+            token: null
+        };
+
+        // ============================================
+        // DADOS MOCK
+        // ============================================
+        const OFERTAS_MOCK = [
+            { id: 'ROTA-001', regiao_nome: 'Zona Norte - Santana', valor_frete: 95.50, total_pacotes: 15, distancia_km: 12.5, tempo_estimado_min: 180, hub_nome: 'Hub Norte' },
+            { id: 'ROTA-002', regiao_nome: 'Zona Sul - Moema', valor_frete: 87.00, total_pacotes: 12, distancia_km: 9.8, tempo_estimado_min: 150, hub_nome: 'Hub Centro' },
+            { id: 'ROTA-003', regiao_nome: 'Centro - República', valor_frete: 72.50, total_pacotes: 10, distancia_km: 7.2, tempo_estimado_min: 120, hub_nome: 'Hub Centro' },
+            { id: 'ROTA-004', regiao_nome: 'Zona Leste - Tatuapé', valor_frete: 110.00, total_pacotes: 18, distancia_km: 15.3, tempo_estimado_min: 210, hub_nome: 'Hub Leste' },
+            { id: 'ROTA-005', regiao_nome: 'Zona Oeste - Pinheiros', valor_frete: 78.00, total_pacotes: 11, distancia_km: 8.5, tempo_estimado_min: 135, hub_nome: 'Hub Oeste' },
+        ];
+
+        const MINHAS_ENTREGAS_MOCK = [
+            { id: 'ENT-001', regiao_nome: 'Zona Norte - Santana', status: 'EM_COLETA', progresso: 0 },
+            { id: 'ENT-002', regiao_nome: 'Centro - Sé', status: 'CONCLUIDA', progresso: 100 },
+        ];
+
+        const PARADAS_MOCK = [
+            { id: 1, destinatario_nome: 'Ana Paula Mendes', telefone: '(11) 98765-4321', endereco_completo: 'R. das Flores, 123 - Apto 42 - Centro', instrucoes: 'Deixar com o porteiro. Não tocar campainha.', status: 'PENDENTE' },
+            { id: 2, destinatario_nome: 'João Carlos Silva', telefone: '(11) 91234-5678', endereco_completo: 'Av. Paulista, 1500 - Sala 301 - Bela Vista', instrucoes: null, status: 'PENDENTE' },
+            { id: 3, destinatario_nome: 'Maria Fernanda Lima', telefone: '(11) 99876-5432', endereco_completo: 'R. Augusta, 789 - Consolação', instrucoes: 'Cliente pediu entrega após 14h.', status: 'PENDENTE' },
+            { id: 4, destinatario_nome: 'Pedro Henrique Costa', telefone: '(11) 95555-4444', endereco_completo: 'Al. Santos, 456 - Jardins', instrucoes: null, status: 'PENDENTE' },
+            { id: 5, destinatario_nome: 'Juliana Martins', telefone: '(11) 96666-7777', endereco_completo: 'R. Oscar Freire, 100 - Jardins', instrucoes: 'Prédio com portaria 24h.', status: 'PENDENTE' },
+        ];
+
+        // ============================================
+        // UTILITÁRIOS
+        // ============================================
+        function mostrarSnackbar(msg, tipo) {
+            const sb = document.getElementById('snackbar');
+            sb.textContent = msg;
+            sb.className = 'snackbar ' + (tipo || '');
+            // Força reflow para Safari
+            void sb.offsetWidth;
+            sb.classList.add('show');
+            setTimeout(function() {
+                sb.classList.remove('show');
+            }, 3000);
+        }
+
+        function esconderSplash() {
+            var splash = document.getElementById('splash');
+            splash.classList.add('hidden');
+            setTimeout(function() {
+                splash.style.display = 'none';
+            }, 600);
+        }
+
+        function mostrarTela(id) {
+            // Esconde todas as telas
+            ['telaLogin', 'telaCadastro', 'telaApp', 'telaRota', 'telaPerfil'].forEach(function(t) {
+                document.getElementById(t).classList.add('hidden');
+            });
+            // Mostra a solicitada
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        // ============================================
+        // LOGIN / CADASTRO
+        // ============================================
+        function fazerLogin() {
+            var email = document.getElementById('loginEmail').value;
+            var senha = document.getElementById('loginSenha').value;
+
+            if (!email || !senha) {
+                mostrarSnackbar('Preencha e-mail e senha', 'error');
+                return;
+            }
+
+            var btn = document.getElementById('btnLogin');
+            var btnText = document.getElementById('btnLoginText');
+            btn.disabled = true;
+            btnText.textContent = 'ENTRANDO...';
+
+            // Simula delay de API
+            setTimeout(function() {
+                ESTADO.motorista = { id: '12345', nome: 'Carlos Silva', email: email };
+                ESTADO.token = 'token_mock_' + Date.now();
+                
+                btn.disabled = false;
+                btnText.textContent = 'ENTRAR';
+                
+                mostrarTela('telaApp');
+                document.getElementById('bottomNav').style.display = 'flex';
+                renderizarOfertas();
+                mostrarSnackbar('Bem-vindo, Carlos!', 'success');
+            }, 800);
+        }
+
+        function mostrarCadastro() {
+            mostrarTela('telaCadastro');
+        }
+
+        function voltarLogin() {
+            mostrarTela('telaLogin');
+        }
+
+        function fazerCadastro() {
+            var nome = document.getElementById('cadNome').value;
+            var email = document.getElementById('cadEmail').value;
+            
+            if (!nome || !email) {
+                mostrarSnackbar('Preencha nome e e-mail', 'error');
+                return;
+            }
+
+            mostrarSnackbar('Cadastro realizado! Aguarde aprovação.', 'success');
+            setTimeout(function() {
+                voltarLogin();
+            }, 1500);
+        }
+
+        // ============================================
+        // NAVEGAÇÃO APP
+        // ============================================
+        function mudarAba(aba) {
+            ESTADO.abaAtiva = aba;
+            
+            // Atualiza tabs
+            document.querySelectorAll('.tab-btn').forEach(function(t, i) {
+                t.classList.toggle('active', i === aba);
+            });
+            document.querySelectorAll('.nav-item').forEach(function(t, i) {
+                t.classList.toggle('active', i === aba);
+            });
+
+            if (aba === 0) renderizarOfertas();
+            else renderizarMinhasEntregas();
+        }
+
+        function atualizarDados() {
+            mostrarSnackbar('Atualizando...', 'success');
+            setTimeout(function() {
+                if (ESTADO.abaAtiva === 0) renderizarOfertas();
+                else renderizarMinhasEntregas();
+            }, 500);
+        }
+
+        function mostrarPerfil() {
+            mostrarTela('telaPerfil');
+            document.getElementById('bottomNav').style.display = 'none';
+        }
+
+        function voltarApp() {
+            mostrarTela('telaApp');
+            document.getElementById('bottomNav').style.display = 'flex';
+        }
+
+        function sairConta() {
+            location.reload();
+        }
+
+        // ============================================
+        // RADAR DE OFERTAS
+        // ============================================
+        function renderizarOfertas() {
+            var container = document.getElementById('conteudoApp');
+            
+            if (OFERTAS_MOCK.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📡</div><p>Nenhuma oferta disponível</p><p style="font-size: 14px; margin-top: 8px;">Fique ligado! Novas rotas aparecem a todo momento.</p></div>';
+                return;
+            }
+
+            var html = '';
+            OFERTAS_MOCK.forEach(function(rota) {
+                html += '<div class="card">' +
+                    '<div class="oferta-header">' +
+                        '<div>' +
+                            '<div class="oferta-regiao">' + rota.regiao_nome + '</div>' +
+                            '<div class="oferta-info">' + rota.total_pacotes + ' pacotes · ' + rota.distancia_km + ' km</div>' +
+                        '</div>' +
+                        '<div class="oferta-valor">R$ ' + rota.valor_frete.toFixed(2) + '</div>' +
+                    '</div>' +
+                    '<div class="tags-row">' +
+                        '<div class="tag">⏱️ ' + (rota.tempo_estimado_min / 60).toFixed(1) + 'h estimadas</div>' +
+                        '<div class="tag">📍 ' + rota.hub_nome + '</div>' +
+                    '</div>' +
+                    '<button class="btn-primary" onclick="aceitarRota(\'' + rota.id + '\', ' + rota.valor_frete + ')">' +
+                        '✓ ACEITAR E INICIAR ROTA' +
+                    '</button>' +
+                '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function aceitarRota(rotaId, valor) {
+            mostrarSnackbar('Rota aceita! Frete: R$ ' + valor.toFixed(2), 'success');
+            ESTADO.rotaAtual = rotaId;
+            ESTADO.paradaAtual = 0;
+            ESTADO.pacotesBipados = {};
+            
+            setTimeout(function() {
+                mostrarTela('telaRota');
+                document.getElementById('bottomNav').style.display = 'none';
+                renderizarRotaAtiva();
+            }, 800);
+        }
+
+        // ============================================
+        // MINHAS ENTREGAS
+        // ============================================
+        function renderizarMinhasEntregas() {
+            var container = document.getElementById('conteudoApp');
+            
+            if (MINHAS_ENTREGAS_MOCK.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📦</div><p>Você ainda não aceitou nenhuma entrega</p></div>';
+                return;
+            }
+
+            var html = '';
+            MINHAS_ENTREGAS_MOCK.forEach(function(ent) {
+                var cor = ent.status === 'EM_COLETA' ? '#F59E0B' : 
+                         ent.status === 'EM_ROTA' ? '#3B82F6' : '#10B981';
+                var icone = ent.status === 'EM_COLETA' ? '🏭' : 
+                           ent.status === 'EM_ROTA' ? '🚚' : '✓';
+                var texto = ent.status === 'EM_COLETA' ? 'Em coleta no hub' :
+                           ent.status === 'EM_ROTA' ? 'Em entrega' : 'Finalizada';
+                var podeClicar = ent.status !== 'CONCLUIDA';
+                
+                html += '<div class="card" style="' + (podeClicar ? 'cursor: pointer;' : '') + '" ' +
+                    (podeClicar ? 'onclick="continuarEntrega(\'' + ent.id + '\')"' : '') + '>' +
+                    '<div style="display: flex; align-items: center; gap: 12px;">' +
+                        '<div style="width: 48px; height: 48px; border-radius: 50%; background: ' + cor + '20; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">' +
+                            icone +
+                        '</div>' +
+                        '<div style="flex: 1;">' +
+                            '<div style="font-weight: 600;">' + ent.regiao_nome + '</div>' +
+                            '<div style="font-size: 13px; color: #64748B;">' + texto + '</div>' +
+                        '</div>' +
+                        (podeClicar ? '<span style="font-size: 20px; color: #CBD5E1;">›</span>' : '') +
+                    '</div>' +
+                '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function continuarEntrega(id) {
+            ESTADO.rotaAtual = id;
+            mostrarTela('telaRota');
+            document.getElementById('bottomNav').style.display = 'none';
+            renderizarRotaAtiva();
+        }
+
+        // ============================================
+        // ROTA ATIVA
+        // ============================================
+        function renderizarRotaAtiva() {
+            var progresso = ((ESTADO.paradaAtual + 1) / PARADAS_MOCK.length) * 100;
+            document.getElementById('rotaProgressoTexto').textContent = (ESTADO.paradaAtual + 1) + '/' + PARADAS_MOCK.length;
+            document.getElementById('rotaProgressoBar').style.width = progresso + '%';
+
+            var parada = PARADAS_MOCK[ESTADO.paradaAtual];
+            var jaBipado = ESTADO.pacotesBipados[ESTADO.paradaAtual] || false;
+
+            var html = '<div class="parada-card">' +
+                '<div class="parada-header">' +
+                    '<div class="parada-numero">' + (ESTADO.paradaAtual + 1) + '</div>' +
+                    '<div>' +
+                        '<div class="parada-nome">' + parada.destinatario_nome + '</div>' +
+                        '<div style="color: #64748B; font-size: 13px;">' + parada.telefone + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="parada-endereco">' + parada.endereco_completo + '</div>';
+
+            if (parada.instrucoes) {
+                html += '<div class="instrucao-box">ℹ️ ' + parada.instrucoes + '</div>';
+            }
+
+            html += '<div class="acoes-list">';
+
+            if (!jaBipado) {
+                html += '<button class="acao-item" onclick="abrirScanner()" style="border-color: #FDE68A; background: #FFFBEB;">' +
+                    '<div class="acao-icon" style="background: #FEF3C7;">📷</div>' +
+                    '<div class="acao-info">' +
+                        '<div class="acao-titulo">Bipar Pacote</div>' +
+                        '<div class="acao-sub">Escaneie a etiqueta</div>' +
+                    '</div>' +
+                '</button>';
+            } else {
+                html += '<div class="acao-item" style="border-color: #A7F3D0; background: #ECFDF5; opacity: 0.8;">' +
+                    '<div class="acao-icon" style="background: #D1FAE5;">✓</div>' +
+                    '<div class="acao-info">' +
+                        '<div class="acao-titulo" style="color: #10B981;">Pacote Validado</div>' +
+                        '<div class="acao-sub">Código confirmado</div>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            html += '<button class="acao-item" onclick="abrirNavegacao(\'' + parada.endereco_completo + '\')">' +
+                '<div class="acao-icon" style="background: #DBEAFE;">🧭</div>' +
+                '<div class="acao-info">' +
+                    '<div class="acao-titulo">Iniciar Navegação</div>' +
+                    '<div class="acao-sub">Abrir Google Maps</div>' +
+                '</div>' +
+            '</button>';
+
+            if (jaBipado) {
+                html += '<button class="acao-item" onclick="abrirAssinatura()" style="border-color: #A7F3D0; background: #ECFDF5;">' +
+                    '<div class="acao-icon" style="background: #D1FAE5;">📸</div>' +
+                    '<div class="acao-info">' +
+                        '<div class="acao-titulo">Entrega Concluída</div>' +
+                        '<div class="acao-sub">Foto + Assinatura do cliente</div>' +
+                    '</div>' +
+                '</button>' +
+                '<button class="acao-item" onclick="mostrarInsucesso()" style="border-color: #FECACA; background: #FEF2F2;">' +
+                    '<div class="acao-icon" style="background: #FEE2E2;">❌</div>' +
+                    '<div class="acao-info">' +
+                        '<div class="acao-titulo">Destinatário Ausente</div>' +
+                        '<div class="acao-sub">Logística reversa</div>' +
+                    '</div>' +
+                '</button>';
+            }
+
+            html += '</div></div>';
+            document.getElementById('rotaConteudo').innerHTML = html;
+        }
+
+        function abrirScanner() {
+            document.getElementById('scannerOverlay').classList.add('active');
+            // Simula bip ao tocar na tela
+            var overlay = document.getElementById('scannerOverlay');
+            overlay.onclick = function(e) {
+                if (e.target === overlay || e.target.classList.contains('scanner-frame')) {
+                    fecharScanner();
+                    ESTADO.pacotesBipados[ESTADO.paradaAtual] = true;
+                    mostrarSnackbar('Pacote PKG-' + Date.now() + ' validado!', 'success');
+                    renderizarRotaAtiva();
+                }
+            };
+        }
+
+        function fecharScanner() {
+            document.getElementById('scannerOverlay').classList.remove('active');
+        }
+
+        function abrirNavegacao(endereco) {
+            var url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(endereco);
+            window.open(url, '_blank');
+        }
+
+        function abrirAssinatura() {
+            document.getElementById('assinaturaOverlay').classList.add('active');
+            initAssinatura();
+        }
+
+        function fecharAssinatura() {
+            document.getElementById('assinaturaOverlay').classList.remove('active');
+        }
+
+        function mostrarInsucesso() {
+            var motivo = prompt('Informe o motivo da não entrega:', 'Destinatário ausente');
+            if (motivo) {
+                mostrarSnackbar('Entrega marcada como insucesso: ' + motivo, 'error');
+                proximaParada();
+            }
+        }
+
+        function proximaParada() {
+            if (ESTADO.paradaAtual < PARADAS_MOCK.length - 1) {
+                ESTADO.paradaAtual++;
+                ESTADO.pacotesBipados[ESTADO.paradaAtual] = false;
+                renderizarRotaAtiva();
+            } else {
+                mostrarSnackbar('🎉 Parabéns! Rota concluída!', 'success');
+                setTimeout(function() {
+                    mostrarTela('telaApp');
+                    document.getElementById('bottomNav').style.display = 'flex';
+                    mudarAba(1);
+                }, 2000);
+            }
+        }
+
+        // ============================================
+        // ASSINATURA DIGITAL (Canvas Touch Safari)
+        // ============================================
+        var canvas, ctx, desenhando = false;
+
+        function initAssinatura() {
+            canvas = document.getElementById('assinaturaCanvas');
+            var area = document.getElementById('assinaturaArea');
+            
+            // Aguarda layout
+            setTimeout(function() {
+                canvas.width = area.offsetWidth;
+                canvas.height = area.offsetHeight;
+                
+                ctx = canvas.getContext('2d');
+                ctx.strokeStyle = '#1E293B';
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                var lastX = 0, lastY = 0;
+
+                function getPos(e) {
+                    var rect = canvas.getBoundingClientRect();
+                    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    return {
+                        x: clientX - rect.left,
+                        y: clientY - rect.top
+                    };
+                }
+
+                function startDraw(e) {
+                    e.preventDefault();
+                    desenhando = true;
+                    var pos = getPos(e);
+                    lastX = pos.x;
+                    lastY = pos.y;
+                    document.getElementById('assinaturaPlaceholder').style.display = 'none';
+                }
+
+                function draw(e) {
+                    if (!desenhando) return;
+                    e.preventDefault();
+                    var pos = getPos(e);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(pos.x, pos.y);
+                    ctx.stroke();
+
+                    lastX = pos.x;
+                    lastY = pos.y;
+                }
+
+                function stopDraw() {
+                    desenhando = false;
+                }
+
+                // Remove listeners antigos
+                canvas.removeEventListener('touchstart', startDraw);
+                canvas.removeEventListener('touchmove', draw);
+                canvas.removeEventListener('touchend', stopDraw);
+                canvas.removeEventListener('mousedown', startDraw);
+                canvas.removeEventListener('mousemove', draw);
+                canvas.removeEventListener('mouseup', stopDraw);
+                canvas.removeEventListener('mouseout', stopDraw);
+
+                // Adiciona novos
+                canvas.addEventListener('touchstart', startDraw, {passive: false});
+                canvas.addEventListener('touchmove', draw, {passive: false});
+                canvas.addEventListener('touchend', stopDraw);
+                canvas.addEventListener('mousedown', startDraw);
+                canvas.addEventListener('mousemove', draw);
+                canvas.addEventListener('mouseup', stopDraw);
+                canvas.addEventListener('mouseout', stopDraw);
+            }, 100);
+        }
+
+        function limparAssinatura() {
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                document.getElementById('assinaturaPlaceholder').style.display = 'flex';
+            }
+        }
+
+        function confirmarAssinatura() {
+            fecharAssinatura();
+            mostrarSnackbar('Entrega finalizada com sucesso!', 'success');
+            setTimeout(function() {
+                proximaParada();
+            }, 1000);
+        }
+
+        // ============================================
+        // INICIALIZAÇÃO - Safari Safe
+        // ============================================
+        function initApp() {
+            // Garante que o splash some mesmo se algo falhar
+            setTimeout(function() {
+                esconderSplash();
+            }, 2500);
+
+            // Previne scroll bounce no Safari
+            document.addEventListener('touchmove', function(e) {
+                if (e.target.closest('#app-container') === null) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            // Previne zoom no double-tap
+            var lastTouchEnd = 0;
+            document.addEventListener('touchend', function(e) {
+                var now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+
+            // Corrige viewport no Safari iOS
+            var setVH = function() {
+                var vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', vh + 'px');
+            };
+            setVH();
+            window.addEventListener('resize', setVH);
+            window.addEventListener('orientationchange', function() {
+                setTimeout(setVH, 100);
+            });
+        }
+
+        // Inicia quando DOM estiver pronto
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+</body>
+</html>
